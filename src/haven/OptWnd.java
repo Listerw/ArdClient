@@ -2228,7 +2228,7 @@ public class OptWnd extends Window {
                 a = val;
             }
         });
-        appender.add(new CheckBox("Drop leeches automatically") {
+        appender.add(new CheckBox("Drop leeches/Ticks automatically") {
             {
                 a = Config.leechdrop;
             }
