@@ -39,7 +39,7 @@ public class FoodService {
     private static final String DEFAULT_SERVICE_URL = "https://food.cediner.tech/";
     public static final String API_ENDPOINT = Utils.getpref("food_service_endpoint_api", DEFAULT_SERVICE_URL + "api/");
     private static final String FOOD_DATA_URL = Utils.getpref("food_service_data_url", DEFAULT_SERVICE_URL + "api/data/food-info.json");
-    /*private static final File FOOD_DATA_CACHE_FILE = new File("food_data.json");*/
+    private static final File FOOD_DATA_CACHE_FILE = new File("food_data.json");
     private static String token = "ardClient";  //Config.confid maybe ArdClient also works
 
     private static final Map<String, ParsedFoodInfo> cachedItems = new ConcurrentHashMap<>();
@@ -50,7 +50,7 @@ public class FoodService {
         if (!Resource.language.equals("en")) {
             System.out.println("FoodUtil ERROR: Only English language is allowed to send food data");
         }
-        /*scheduler.execute(FoodService::loadCachedFoodData);*/
+        scheduler.execute(FoodService::loadCachedFoodData);
         scheduler.scheduleAtFixedRate(FoodService::sendItems, 10L, 10, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(FoodService::requestFoodDataCache, 0L, 30, TimeUnit.MINUTES);
     }
@@ -58,13 +58,14 @@ public class FoodService {
     /**
      * Load cached food data from the file (only keys for now since we don't use content anyway)
      */
-    /*private static void loadCachedFoodData() {
+    private static void loadCachedFoodData() {
         try {
             if (FOOD_DATA_CACHE_FILE.exists()) {
-                String jsonData = String.join("", Files.readAllLines(FOOD_DATA_CACHE_FILE.toPath(), StandardCharsets.UTF_8));
+                Files.delete(FOOD_DATA_CACHE_FILE.toPath());
+                /*String jsonData = String.join("", Files.readAllLines(FOOD_DATA_CACHE_FILE.toPath(), StandardCharsets.UTF_8));
                 JSONObject object = new JSONObject(jsonData);
                 object.keySet().forEach(key -> cachedItems.put(key, new ParsedFoodInfo()));
-                System.out.println("Loaded food data file: " + cachedItems.size() + " entries");
+                System.out.println("Loaded food data file: " + cachedItems.size() + " entries");*/
             }
         } catch (Exception ex) {
             System.err.println("Cannot load food data file: " + ex.getMessage());
@@ -74,7 +75,7 @@ public class FoodService {
                 e.printStackTrace();
             }
         }
-    }*/
+    }
 
     private static double lastModified = -1;
     /**
