@@ -172,7 +172,7 @@ public class Equipory extends Widget implements DTarget {
         try {
             if (!checkForDrop.isEmpty()) {
                 GItem g = checkForDrop.get(0);
-                if (g.resource().name.equals("gfx/invobjs/leech")) {
+                if (g.resource().name.equals("gfx/invobjs/leech") || g.resource().name.equals("gfx/invobjs/tick")) {
                     g.drop = true;
                     //ui.gui.map.wdgmsg("drop", Coord.z);
                 }
