@@ -21,6 +21,7 @@ import haven.Sprite;
 import haven.States;
 import haven.res.lib.leaves.FallingLeaves;
 import modification.configuration;
+import modification.dev;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,7 +62,11 @@ public class Tree extends Sprite {
             }
         }
         for (RenderLink.Res lr : res.layers(RenderLink.Res.class)) {
-            rl.add(new Pair<>(lr.id, lr.l.make()));
+            try {
+                rl.add(new Pair<>(lr.id, lr.l.make()));
+            } catch (Throwable e) {
+                dev.simpleLog(e);
+            }
         }
         return (rl);
     }
