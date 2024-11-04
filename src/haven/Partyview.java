@@ -50,7 +50,7 @@ public class Partyview extends MovableWidget {
     @RName("pv")
     public static class $_ implements Factory {
         public Widget create(UI ui, Object[] args) {
-            return (new Partyview(ui.sess.glob.party, (Integer) args[0]));
+            return (new Partyview(ui.sess.glob.party, Utils.uiv(args[0])));
         }
     }
 
@@ -163,22 +163,37 @@ public class Partyview extends MovableWidget {
         super.wdgmsg(sender, msg, args);
     }
 
+    private void updsteam() {
+        Steam api = Steam.get();
+        if (api != null)
+            api.setparty(Integer.toString(party.id), party.memb.size());
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        Steam api = Steam.get();
+        if (api != null)
+            api.setparty(null, 0);
+    }
+
     public void uimsg(String msg, Object... args) {
         if (msg == "list") {
             Map<Long, Member> nmemb = new HashMap<>(), cmemb = party.memb;
             for (int a = 0; a < args.length; a++) {
-                long id = Utils.uint32((Integer) args[a]);
+                long id = Utils.uiv(args[a]);
                 Member m = cmemb.get(id);
                 if (m == null)
                     m = party.new Member(id);
                 nmemb.put(id, m);
             }
             party.memb = nmemb;
+            updsteam();
         } else if (msg == "ldr") {
-            party.leader = party.memb.get(Utils.uint32((Integer) args[0]));
+            party.leader = party.memb.get(Utils.uiv(args[0]));
         } else if (msg == "m") {
             int a = 0;
-            Member m = party.memb.get(Utils.uint32((Integer) args[a++]));
+            Member m = party.memb.get(Utils.uiv(args[a++]));
             if (m != null) {
                 Coord2d c = null;
                 if ((a < args.length) && (args[a] instanceof Coord))
@@ -187,6 +202,9 @@ public class Partyview extends MovableWidget {
                     m.col = (Color) args[a++];
                 m.setc(c);
             }
+        } else if (msg == "pid") {
+            party.id = Utils.iv(args[0]);
+            updsteam();
         } else {
             super.uimsg(msg, args);
         }
