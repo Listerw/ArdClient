@@ -52,7 +52,7 @@ public class FoodService {
         }
         scheduler.execute(FoodService::loadCachedFoodData);
         scheduler.scheduleAtFixedRate(FoodService::sendItems, 10L, 10, TimeUnit.SECONDS);
-        scheduler.scheduleAtFixedRate(FoodService::requestFoodDataCache, 0L, 30, TimeUnit.MINUTES);
+        //scheduler.scheduleAtFixedRate(FoodService::requestFoodDataCache, 0L, 30, TimeUnit.MINUTES);
     }
 
     /**
@@ -103,8 +103,8 @@ public class FoodService {
 
                     /*Files.write(FOOD_DATA_CACHE_FILE.toPath(), Collections.singleton(content), StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);*/
                     JSONObject object = new JSONObject(content);
-                    object.keySet().forEach(key -> cachedItems.put(key, new ParsedFoodInfo()));
-                    System.out.println("Updated food data file: " + cachedItems.size() + " entries");
+                    //object.keySet().forEach(key -> cachedItems.put(key, new ParsedFoodInfo()));
+                    //System.out.println("Updated food data file: " + cachedItems.size() + " entries");
                 } catch (Exception ex) {
                     System.err.println("Cannot load remote food data file: " + ex.getMessage());
                 }
