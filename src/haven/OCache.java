@@ -270,6 +270,25 @@ public class OCache implements Iterable<Gob> {
         return (null);
     }
 
+    public synchronized Gob createTempGob(long id) {
+        Gob gob = new Gob(glob, Coord2d.z, id);
+        gob.addol(new Gob.Overlay(gob, new Sprite(gob, null) {
+            private double start = Utils.rtime();
+
+            @Override
+            public boolean setup(final RenderList d) {
+                return (false);
+            }
+
+            @Override
+            public boolean tick(final double dt) {
+                return (Utils.rtime() - start >= 10 * 60);
+            }
+        }));
+        add(gob);
+        return (gob);
+    }
+
     private AtomicLong nextvirt = new AtomicLong(-1);
 
     public class Virtual extends Gob {
