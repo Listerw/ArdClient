@@ -26,13 +26,12 @@
 
 package haven;
 
+import modification.dev;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -260,9 +259,13 @@ public class GobIcon extends GAttrib {
     }
 
     public static Icon.Factory getfac(Resource res) {
-        Icon.Factory fac = res.getcode(Icon.Factory.class, false);
-        if (fac != null)
-            return (fac);
+        try {
+            Icon.Factory fac = res.getcode(Icon.Factory.class, false);
+            if (fac != null)
+                return (fac);
+        } catch (Throwable e) {
+            dev.simpleLog(e);
+        }
         return (ImageIcon.factory);
     }
 
