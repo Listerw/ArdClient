@@ -89,7 +89,7 @@ public class MapFileWidget extends Widget implements Console.Directory {
     private boolean dragging;
     private Coord dsc, dmc;
     private String biome, seginfo;
-    public static int zoommax = 3;
+    public static int zoommax = 5;
     public static int zoommin = -3;
     public int zoom = Math.max(zoommin, Math.min(zoommax, Utils.getprefi("zoomlmap", 0)));
     //    public static final double[] scaleFactors = new double[]{1 / 8.0, 1 / 4.0, 1 / 2.0, 1, 100 / 75.0, 100 / 50.0, 100 / 25.0, 100 / 15.0, 100 / 8.0}; //FIXME that his add more scale
