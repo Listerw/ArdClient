@@ -50,7 +50,9 @@ import haven.purus.pbot.PBotUtils;
 import haven.resutil.BPRadSprite;
 import haven.sloth.gob.Alerted;
 import haven.sloth.gob.Deleted;
+import haven.sloth.gob.HeldBy;
 import haven.sloth.gob.Hidden;
+import haven.sloth.gob.Holding;
 import haven.sloth.gob.Mark;
 import haven.sloth.gob.Type;
 import haven.sloth.gui.SoundSelector;
@@ -2091,8 +2093,17 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
      * c) Predictive model said it was okay
      */
     private boolean triggermove() {
-        final Gob pl = ui.sess.glob.oc.getgob(plgob);
+        Gob pl = ui.sess.glob.oc.getgob(plgob);
         if (pl != null) {
+            Holding hd = pl.getattr(Holding.class);
+            if (hd != null) {
+                Gob hg = ui.sess.glob.oc.getgob(hd.held.id);
+                if (hg != null) {
+                    HeldBy hb = hg.getattr(HeldBy.class);
+                    if (ui.sess.glob.oc.getgob(hb.holder.id) == pl)
+                        pl = hg;
+                }
+            }
             if (movingto != null && pl.getattr(Moving.class) != null) {
                 final Coord2d plc = new Coord2d(pl.getc());
                 final double left = plc.dist(movingto) / mspeed;
@@ -2115,8 +2126,17 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
     boolean isclickongob = false;
 
     public boolean isfinishmovequeue() {
-        final Gob pl = PBotUtils.player(ui);
+        Gob pl = PBotUtils.player(ui);
         if (pl != null) {
+            Holding hd = pl.getattr(Holding.class);
+            if (hd != null) {
+                Gob hg = ui.sess.glob.oc.getgob(hd.held.id);
+                if (hg != null) {
+                    HeldBy hb = hg.getattr(HeldBy.class);
+                    if (ui.sess.glob.oc.getgob(hb.holder.id) == pl)
+                        pl = hg;
+                }
+            }
             if (!pl.isMoving()) {
                 finishTimes++;
                 if (finishTimes > maxfinish) {
@@ -2773,7 +2793,7 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
                             return (null);
                         });*/
                         purusPfLeftClick(mc.floor(), null);
-                    } else if (clickb == 1 && ui.modmeta && ui.gui.vhand == null && curs != null && curs.name.equals("gfx/hud/curs/arw")) {
+                    } else if (clickb == 1 && ui.modmeta && ui.gui.vhand == null && curs != null && (curs.name.equals("gfx/hud/curs/arw") || curs.name.equals("gfx/hud/curs/dig") || curs.name.equals("gfx/hud/curs/whip"))) {
                         //Queued movement
                         movequeue.add(mc);
                     } else {
