@@ -2100,8 +2100,9 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
                 Gob hg = ui.sess.glob.oc.getgob(hd.held.id);
                 if (hg != null) {
                     HeldBy hb = hg.getattr(HeldBy.class);
-                    if (ui.sess.glob.oc.getgob(hb.holder.id) == pl)
-                        pl = hg;
+                    if (hb != null)
+                        if (ui.sess.glob.oc.getgob(hb.holder.id) == pl)
+                            pl = hg;
                 }
             }
             if (movingto != null && pl.getattr(Moving.class) != null) {
@@ -2133,8 +2134,9 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
                 Gob hg = ui.sess.glob.oc.getgob(hd.held.id);
                 if (hg != null) {
                     HeldBy hb = hg.getattr(HeldBy.class);
-                    if (ui.sess.glob.oc.getgob(hb.holder.id) == pl)
-                        pl = hg;
+                    if (hb != null)
+                        if (ui.sess.glob.oc.getgob(hb.holder.id) == pl)
+                            pl = hg;
                 }
             }
             if (!pl.isMoving()) {
