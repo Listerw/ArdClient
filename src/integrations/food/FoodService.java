@@ -131,11 +131,12 @@ public class FoodService {
                     QBuff qBuff = ItemInfo.find(QBuff.class, infoList);
                     double quality = qBuff != null ? qBuff.q : 10.0;
                     double multiplier = Math.sqrt(quality / 10.0);
+                    double multiplier2 = Math.sqrt(multiplier);
 
                     ParsedFoodInfo parsedFoodInfo = new ParsedFoodInfo();
                     parsedFoodInfo.resourceName = resName;
                     parsedFoodInfo.energy = (int) (Math.round(foodInfo.end * 100));
-                    parsedFoodInfo.hunger = round2Dig(foodInfo.glut * 100);
+                    parsedFoodInfo.hunger = round2Dig(foodInfo.glut * 1000 / multiplier2);
 
                     for (int i = 0; i < foodInfo.evs.length; i++) {
                         parsedFoodInfo.feps.add(new FoodFEP(foodInfo.evs[i].ev.orignm, round2Dig(foodInfo.evs[i].a / multiplier)));
