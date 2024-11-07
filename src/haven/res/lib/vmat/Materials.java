@@ -6,6 +6,7 @@ import haven.IntMap;
 import haven.Material;
 import haven.Message;
 import haven.Resource;
+import modification.dev;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,12 +22,17 @@ public class Materials extends Mapping {
         while (!sdt.eom()) {
             Indir<Resource> mres = rr.getres(sdt.uint16());
             int mid = sdt.int8();
-            Material.Res mat;
-            if (mid >= 0)
-                mat = mres.get().layer(Material.Res.class, mid);
-            else
-                mat = mres.get().layer(Material.Res.class);
-            ret.put(idx++, mat.get());
+            try {
+                Material.Res mat;
+                if (mid >= 0)
+                    mat = mres.get().layer(Material.Res.class, mid);
+                else
+                    mat = mres.get().layer(Material.Res.class);
+                ret.put(idx++, mat.get());
+            } catch (Throwable e) {
+                dev.simpleLog(e);
+                idx++;
+            }
         }
         return (ret);
     }
