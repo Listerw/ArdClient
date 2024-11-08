@@ -9,6 +9,7 @@ import haven.Listbox;
 import haven.Resource;
 import haven.Tex;
 import haven.Text;
+import haven.UI;
 import haven.Widget;
 import haven.Window;
 import haven.sloth.io.ForagableData;
@@ -25,7 +26,7 @@ public class ForageHelperWnd extends Window implements Observer {
     public ForageHelperWnd() {
         super(Coord.z, "Forage Helper", "Forage Helper");
         final Label lbl = new Label("Your Per * Exp: ");
-        add(lbl, new Coord(450 / 2, 0).sub(lbl.sz.x / 2, 0));
+        add(lbl, new Coord(UI.scale(450 / 2), 0).sub(lbl.sz.x / 2, 0));
         valc = lbl.c.add(lbl.sz.x, 0);
         //find max length name
         final int maxName = maxNameLength() + 1;
@@ -44,7 +45,7 @@ public class ForageHelperWnd extends Window implements Observer {
         final Tex autumn = Text.renderstroked("Autumn").tex();
         final Tex winter = Text.renderstroked("Winter").tex();
         //Header
-        add(new Widget(new Coord(470, 30)) {
+        add(new Widget(UI.scale(470, 30)) {
             @Override
             public void draw(GOut g) {
                 g.chcolor(Color.BLACK);
@@ -53,25 +54,25 @@ public class ForageHelperWnd extends Window implements Observer {
 
                 g.chcolor(Color.WHITE);
                 g.rect(Coord.z, g.sz);
-                g.line(new Coord(30, 0), new Coord(30, 30), 1);
-                g.aimage(name, new Coord(31, 15), 0, 0.5f);
-                g.line(new Coord(30 + maxName + 2, 0), new Coord(30 + maxName + 2, 30), 1);
-                g.aimage(min, new Coord(minValStart, 15), 0, 0.5f);
-                g.line(new Coord(maxValStart, 0), new Coord(maxValStart, 30), 1);
-                g.aimage(seeall, new Coord(maxValStart, 15), 0, 0.5f);
-                g.line(new Coord(spStart, 0), new Coord(spStart, 30), 1);
-                g.aimage(spring, new Coord(spStart + 2, 15), 0, 0.5f);
-                g.line(new Coord(suStart, 0), new Coord(suStart, 30), 1);
-                g.aimage(summer, new Coord(suStart + 2, 15), 0, 0.5f);
-                g.line(new Coord(auStart, 0), new Coord(auStart, 30), 1);
-                g.aimage(autumn, new Coord(auStart + 2, 15), 0, 0.5f);
-                g.line(new Coord(wiStart, 0), new Coord(wiStart, 30), 1);
-                g.aimage(winter, new Coord(wiStart + 2, 15), 0, 0.5f);
+                g.line(UI.scale(30, 0), UI.scale(30, 30), 1);
+                g.aimage(name, UI.scale(31, 15), 0, 0.5f);
+                g.line(UI.scale(30 + maxName + 2, 0), UI.scale(30 + maxName + 2, 30), 1);
+                g.aimage(min, UI.scale(minValStart, 15), 0, 0.5f);
+                g.line(UI.scale(maxValStart, 0), UI.scale(maxValStart, 30), 1);
+                g.aimage(seeall, UI.scale(maxValStart, 15), 0, 0.5f);
+                g.line(UI.scale(spStart, 0), UI.scale(spStart, 30), 1);
+                g.aimage(spring, UI.scale(spStart + 2, 15), 0, 0.5f);
+                g.line(UI.scale(suStart, 0), UI.scale(suStart, 30), 1);
+                g.aimage(summer, UI.scale(suStart + 2, 15), 0, 0.5f);
+                g.line(UI.scale(auStart, 0), UI.scale(auStart, 30), 1);
+                g.aimage(autumn, UI.scale(auStart + 2, 15), 0, 0.5f);
+                g.line(UI.scale(wiStart, 0), UI.scale(wiStart, 30), 1);
+                g.aimage(winter, UI.scale(wiStart + 2, 15), 0, 0.5f);
                 g.chcolor();
             }
-        }, new Coord(0, lbl.sz.y + 5));
+        }, new Coord(0, lbl.sz.y + UI.scale(5)));
         //Listbox
-        final Listbox<ForagableData> foragebox = new Listbox<ForagableData>(480, 20, 30) {
+        final Listbox<ForagableData> foragebox = new Listbox<ForagableData>(UI.scale(480), 20, UI.scale(30)) {
             @Override
             protected ForagableData listitem(int i) {
                 return ForagableData.forageables.get(i);
@@ -93,7 +94,7 @@ public class ForageHelperWnd extends Window implements Observer {
                     bg = Color.RED;
                 }
                 g.chcolor(bg);
-                g.frect(Coord.z, new Coord(30, 30));
+                g.frect(Coord.z, UI.scale(30, 30));
                 g.chcolor();
 
                 g.chcolor(Color.WHITE);
@@ -103,36 +104,36 @@ public class ForageHelperWnd extends Window implements Observer {
                     try {
                         final Resource res = item.res.get();
                         if (res.layer(Resource.imgc) != null) {
-                            g.image(res.layer(Resource.imgc).tex(), new Coord(1, 1), new Coord(29, 29));
+                            g.image(res.layer(Resource.imgc).tex(), UI.scale(1, 1), UI.scale(29, 29));
                         }
                     } catch (Resource.Loading e) {
                         //Ignore for now
                     }
                 }
-                g.line(new Coord(30, 0), new Coord(30, 30), 1);
+                g.line(UI.scale(30, 0), UI.scale(30, 30), 1);
                 //Draw name
-                g.image(item.name.tex(), new Coord(31, 15).sub(0, item.name.img.getHeight() / 2));
-                g.line(new Coord(30 + maxName + 2, 0), new Coord(30 + maxName + 2, 30), 1);
+                g.image(item.name.tex(), UI.scale(31, 15).sub(0, item.name.img.getHeight() / 2));
+                g.line(UI.scale(30 + maxName + 2, 0), UI.scale(30 + maxName + 2, 30), 1);
                 //Draw min
-                FastText.prints(g, new Coord(minValStart, 15).sub(FastText.size("" + item.min_value).mul(0f, 0.5f)), "" + item.min_value);
-                g.line(new Coord(maxValStart, 0), new Coord(maxValStart, 30), 1);
+                FastText.prints(g, UI.scale(minValStart, 15).sub(FastText.size("" + item.min_value).mul(0f, 0.5f)), "" + item.min_value);
+                g.line(UI.scale(maxValStart, 0), UI.scale(maxValStart, 30), 1);
                 //Draw max
-                FastText.prints(g, new Coord(maxValStart + 2, 15).sub(FastText.size("" + item.max_value).mul(0f, 0.5f)), "" + item.max_value);
+                FastText.prints(g, UI.scale(maxValStart + 2, 15).sub(FastText.size("" + item.max_value).mul(0f, 0.5f)), "" + item.max_value);
                 //Draw season status'
-                g.line(new Coord(spStart, 0), new Coord(spStart, 30), 1);
-                g.aimage(ForagableData.getSeasonStatusTex(item.spring), new Coord(spStart + 2, 15), 0, 0.5f);
-                g.line(new Coord(suStart, 0), new Coord(suStart, 30), 1);
-                g.aimage(ForagableData.getSeasonStatusTex(item.summer), new Coord(suStart + 2, 15), 0, 0.5f);
-                g.line(new Coord(auStart, 0), new Coord(auStart, 30), 1);
-                g.aimage(ForagableData.getSeasonStatusTex(item.autumn), new Coord(auStart + 2, 15), 0, 0.5f);
-                g.line(new Coord(wiStart, 0), new Coord(wiStart, 30), 1);
-                g.aimage(ForagableData.getSeasonStatusTex(item.winter), new Coord(wiStart + 2, 15), 0, 0.5f);
+                g.line(UI.scale(spStart, 0), UI.scale(spStart, 30), 1);
+                g.aimage(ForagableData.getSeasonStatusTex(item.spring), UI.scale(spStart + 2, 15), 0, 0.5f);
+                g.line(UI.scale(suStart, 0), UI.scale(suStart, 30), 1);
+                g.aimage(ForagableData.getSeasonStatusTex(item.summer), UI.scale(suStart + 2, 15), 0, 0.5f);
+                g.line(UI.scale(auStart, 0), UI.scale(auStart, 30), 1);
+                g.aimage(ForagableData.getSeasonStatusTex(item.autumn), UI.scale(auStart + 2, 15), 0, 0.5f);
+                g.line(UI.scale(wiStart, 0), UI.scale(wiStart, 30), 1);
+                g.aimage(ForagableData.getSeasonStatusTex(item.winter), UI.scale(wiStart + 2, 15), 0, 0.5f);
                 g.chcolor();
             }
 
             @Override
             protected Object itemtooltip(final Coord c, final ForagableData item) {
-                if (c.isect(new Coord(30, 0), new Coord(maxName, 30))) {
+                if (c.isect(UI.scale(30, 0), UI.scale(maxName, 30))) {
                     return item.location;
                 } else {
                     return null;
@@ -144,7 +145,7 @@ public class ForageHelperWnd extends Window implements Observer {
                 //do nothing
             }
         };
-        add(foragebox, new Coord(0, lbl.sz.y + 30 + 5));
+        add(foragebox, new Coord(0, lbl.sz.y + UI.scale(30 + 5)));
         pack();
     }
 

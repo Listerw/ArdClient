@@ -31,28 +31,28 @@ public class DestroyArea extends Window implements GobSelectCallback {
 
     public DestroyArea() {
 
-        super(new Coord(170, 220), "Destroy Gobs in Area");
+        super(UI.scale(170, 220), "Destroy Gobs in Area");
 
-        int ycoord = 5;
+        int ycoord = UI.scale(5);
         final haven.Label lbl = new haven.Label("Alt + Click to select Gob to destroy", infof);
         add(lbl, new Coord(0, ycoord));
 
         final Label lbl2 = new Label("Count of Gobs", infof);
-        add(lbl2, new Coord(0, ycoord += 15));
+        add(lbl2, new Coord(0, ycoord += UI.scale(15)));
         lblc2 = new Label("", Text.num12boldFnd, Color.WHITE);
-        add(lblc2, new Coord(0, ycoord += 15));
+        add(lblc2, new Coord(0, ycoord += UI.scale(15)));
 
         final Label lbl3 = new Label("Gob Selected", infof);
-        add(lbl3, new Coord(0, ycoord += 15));
+        add(lbl3, new Coord(0, ycoord += UI.scale(15)));
         lblc = new Label("", Text.num12boldFnd, Color.WHITE);
-        add(lblc, new Coord(0, ycoord += 15));
+        add(lblc, new Coord(0, ycoord += UI.scale(15)));
         final Label lbl4 = new Label("Gobs remaining", infof);
-        add(lbl4, new Coord(0, ycoord += 15));
+        add(lbl4, new Coord(0, ycoord += UI.scale(15)));
         lblc3 = new Label("", Text.num12boldFnd, Color.white);
-        add(lblc3, new Coord(0, ycoord += 15));
+        add(lblc3, new Coord(0, ycoord += UI.scale(15)));
 
 
-        runbtn = new Button(100, "Run") {
+        runbtn = new Button(UI.scale(100), "Run") {
             @Override
             public void click() {
                 if (list.size() == 0) {
@@ -65,8 +65,8 @@ public class DestroyArea extends Window implements GobSelectCallback {
                 runner.start();
             }
         };
-        add(runbtn, new Coord(0, ycoord += 35));
-        stopbtn = new Button(100, "Stop") {
+        add(runbtn, new Coord(0, ycoord += UI.scale(35)));
+        stopbtn = new Button(UI.scale(100), "Stop") {
             @Override
             public void click() {
                 PBotUtils.debugMsg(ui, "Stopping", Color.white);
@@ -77,8 +77,8 @@ public class DestroyArea extends Window implements GobSelectCallback {
             }
         };
         stopbtn.hide();
-        add(stopbtn, new Coord(0, ycoord += 35));
-        selectareabtn = new Button(100, "Select") {
+        add(stopbtn, new Coord(0, ycoord += UI.scale(35)));
+        selectareabtn = new Button(UI.scale(100), "Select") {
             @Override
             public void click() {
                 if (gobselected == null) {
@@ -89,7 +89,7 @@ public class DestroyArea extends Window implements GobSelectCallback {
                 selectingarea.start();
             }
         };
-        add(selectareabtn, new Coord(0, ycoord += 35));
+        add(selectareabtn, new Coord(0, ycoord += UI.scale(35)));
     }
 
     private class runner implements Runnable {

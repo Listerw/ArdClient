@@ -3248,7 +3248,7 @@ public class OptWnd extends Window {
         );
 
         appender.add(new Label("Open selected windows on login."));
-        CheckListbox autoopenlist = new CheckListbox(UI.scale(320), Config.autowindows.values().size(), 18 + Config.fontadd) {
+        CheckListbox autoopenlist = new CheckListbox(UI.scale(320), Config.autowindows.values().size(), UI.scale(18 + Config.fontadd)) {
             @Override
             protected void itemclick(CheckListboxItem itm, int button) {
                 super.itemclick(itm, button);
@@ -6621,7 +6621,7 @@ public class OptWnd extends Window {
                 });
 
                 appender.add(new Label("Disable animations:"));
-                CheckListbox disanimlist = new CheckListbox(UI.scale(320), Config.disableanim.values().size(), 18 + Config.fontadd) {
+                CheckListbox disanimlist = new CheckListbox(UI.scale(320), Config.disableanim.values().size(), UI.scale(18 + Config.fontadd)) {
                     @Override
                     protected void itemclick(CheckListboxItem itm, int button) {
                         super.itemclick(itm, button);

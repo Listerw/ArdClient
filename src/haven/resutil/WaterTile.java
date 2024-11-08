@@ -231,7 +231,7 @@ public class WaterTile extends Tiler {
     }
 
     static final TexCube sky = new TexCube(Resource.remote().loadwait("gfx/tiles/skycube").layer(Resource.imgc).rawimage);
-    static final TexI nrm = (TexI) Resource.remote().loadwait("gfx/tiles/wn").layer(Resource.imgc).tex();
+    static final TexI nrm = (TexI) Resource.remote().loadwait("gfx/tiles/wn").layer(Resource.imgc).rawtex();
 
     static {
         nrm.mipmap();

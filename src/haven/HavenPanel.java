@@ -559,7 +559,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Console.Directory,
                     if (curs == null)
                         setCursor(null);
                     else
-                        setCursor(makeawtcurs(curs.layer(Resource.imgc).img, curs.layer(Resource.negc).cc));
+                        setCursor(makeawtcurs(curs.layer(Resource.imgc).img, UI.scale(curs.layer(Resource.negc).cc)));
                 } catch (Exception e) {
                     cursmode = "tex";
                 }

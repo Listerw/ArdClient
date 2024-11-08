@@ -19,54 +19,54 @@ public class ColorPicker extends Window {
         this.col = def;
         int w = 0;
         w = Math.max(w, add(new Label("Red:"), new Coord(0, 0)).sz.x);
-        w = Math.max(w, add(new Label("Green:"), new Coord(0, 20)).sz.x);
-        w = Math.max(w, add(new Label("Blue:"), new Coord(0, 40)).sz.x);
-        w = Math.max(w, add(new Label("Alpha:"), new Coord(0, 60)).sz.x);
-        w = Math.max(w, add(new Label("Preview:"), new Coord(0, 80)).sz.x);
-        rsb = new HSlider(255, 0, 255, col.getRed()) {
+        w = Math.max(w, add(new Label("Green:"), new Coord(0, UI.scale(20))).sz.x);
+        w = Math.max(w, add(new Label("Blue:"), new Coord(0, UI.scale(40))).sz.x);
+        w = Math.max(w, add(new Label("Alpha:"), new Coord(0, UI.scale(60))).sz.x);
+        w = Math.max(w, add(new Label("Preview:"), new Coord(0, UI.scale(80))).sz.x);
+        rsb = new HSlider(UI.scale(255), 0, 255, col.getRed()) {
             public void changed() {
                 updateColor(val, col.getGreen(), col.getBlue(), col.getAlpha());
                 rte.settext(String.format("%d", val));
             }
         };
         add(rsb, new Coord(w, 0));
-        gsb = new HSlider(255, 0, 255, col.getGreen()) {
+        gsb = new HSlider(UI.scale(255), 0, 255, col.getGreen()) {
             public void changed() {
                 updateColor(col.getRed(), val, col.getBlue(), col.getAlpha());
                 gte.settext(String.format("%d", val));
             }
         };
-        add(gsb, new Coord(w, 20));
-        bsb = new HSlider(255, 0, 255, col.getBlue()) {
+        add(gsb, new Coord(w, UI.scale(20)));
+        bsb = new HSlider(UI.scale(255), 0, 255, col.getBlue()) {
             public void changed() {
                 updateColor(col.getRed(), col.getGreen(), val, col.getAlpha());
                 ColorPicker.this.prev.setColor(col);
                 bte.settext(String.format("%d", val));
             }
         };
-        add(bsb, new Coord(w, 40));
-        asb = new HSlider(255, 0, 255, col.getAlpha()) {
+        add(bsb, new Coord(w, UI.scale(40)));
+        asb = new HSlider(UI.scale(255), 0, 255, col.getAlpha()) {
             public void changed() {
                 updateColor(col.getRed(), col.getGreen(), col.getBlue(), val);
                 ColorPicker.this.prev.setColor(col);
                 ate.settext(String.format("%d", val));
             }
         };
-        add(asb, new Coord(w, 60));
-        w = w + rsb.sz.x + 5;
-        rte = add(new TextEntry(50, String.format("%d", col.getRed())),
+        add(asb, new Coord(w, UI.scale(60)));
+        w = w + rsb.sz.x + UI.scale(5);
+        rte = add(new TextEntry(UI.scale(50), String.format("%d", col.getRed())),
                 new Coord(w, 0));
         rte.canactivate = true;
-        gte = add(new TextEntry(50, String.format("%d", col.getGreen())),
-                new Coord(w, 20));
+        gte = add(new TextEntry(UI.scale(50), String.format("%d", col.getGreen())),
+                new Coord(w, UI.scale(20)));
         gte.canactivate = true;
-        bte = add(new TextEntry(50, String.format("%d", col.getBlue())),
-                new Coord(w, 40));
+        bte = add(new TextEntry(UI.scale(50), String.format("%d", col.getBlue())),
+                new Coord(w, UI.scale(40)));
         bte.canactivate = true;
-        ate = add(new TextEntry(50, String.format("%d", col.getAlpha())),
-                new Coord(w, 60));
+        ate = add(new TextEntry(UI.scale(50), String.format("%d", col.getAlpha())),
+                new Coord(w, UI.scale(60)));
         ate.canactivate = true;
-        prev = add(new ColorPreview(new Coord(w + 50, 30), col), new Coord(0, 100));
+        prev = add(new ColorPreview(new Coord(w + UI.scale(50), UI.scale(30)), col), new Coord(0, UI.scale(100)));
         pack();
     }
 
