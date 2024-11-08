@@ -68,6 +68,8 @@ public class StaticSprite extends Sprite {
             if ((mr.mat != null) && ((mr.id < 0) || (((1 << mr.id) & fl) != 0)))
                 try {
                     rl.add(mr.mat.get().apply(mr.m));
+                } catch (Loading e) {
+                    throw e;
                 } catch (Throwable e) {
                     dev.simpleLog(e);
                 }
