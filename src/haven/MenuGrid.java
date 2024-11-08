@@ -1765,8 +1765,14 @@ public class MenuGrid extends Widget {
                             pag.sdt = data;
                             pag.invalidate();
                         }
-                        if ((fl & 8) != 0)
+                        if ((fl & 8) != 0) {
+                            final Pagina finalPag = pag;
+                            Defer.later(() -> {
+                                ui.msg("New discovery: " + finalPag.button().name());
+                                return (null);
+                            });
                             pag.anew = 2;
+                        }
                         Object[] rawinfo = ((fl & 16) != 0) ? (Object[]) args[a++] : new Object[0];
                         if (!Arrays.deepEquals(pag.rawinfo, rawinfo)) {
                             pag.rawinfo = rawinfo;

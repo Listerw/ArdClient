@@ -111,7 +111,35 @@ public class RootWidget extends ConsoleHost implements UI.MessageWidget {
         if (msg == "err") {
             ui.error((String) args[0]);
         } else if (msg == "msg") {
-            ui.msg((String) args[0]);
+            if (args.length == 1) {
+                ui.msg((String) args[0]);
+            } else {
+                Defer.later(() -> {
+                    int a = 0;
+                    String text = (String) args[a++];
+                    Color color = Color.WHITE;
+                    if (args[a] instanceof Color)
+                        color = (Color) args[a++];
+                    if (args.length > a) {
+                        Indir<Resource> res = ui.sess.getresv(args[a++]);
+                        //info.sfx = (res == null) ? null : Audio.resclip(res.get());
+                    }
+                    ui.msg(text);
+                    return (null);
+                });
+            }
+        } else if (msg == "msg2") {
+            Defer.later(() -> {
+                Resource res = ui.sess.getresv(args[0]).get();
+                //Notice.Factory fac = res.getcode(Notice.Factory.class, true);
+                /*ui.msg(fac.format(new OwnerContext() {
+                    public <T> T context(Class<T> cl) {
+                        return (wdgctx.context(cl, RootWidget.this));
+                    }
+                }, Utils.splice(args, 1)));*/
+                ui.msg(res.toString());
+                return (null);
+            });
         } else if (msg == "sfx") {
             int a = 0;
             Indir<Resource> resid = ui.sess.getres((Integer) args[a++]);
