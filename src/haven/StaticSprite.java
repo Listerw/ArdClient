@@ -66,7 +66,11 @@ public class StaticSprite extends Sprite {
         Collection<Rendered> rl = new LinkedList<>();
         for (FastMesh.MeshRes mr : res.layers(FastMesh.MeshRes.class)) {
             if ((mr.mat != null) && ((mr.id < 0) || (((1 << mr.id) & fl) != 0)))
-                rl.add(mr.mat.get().apply(mr.m));
+                try {
+                    rl.add(mr.mat.get().apply(mr.m));
+                } catch (Throwable e) {
+                    dev.simpleLog(e);
+                }
         }
         for (RenderLink.Res lr : res.layers(RenderLink.Res.class)) {
             if ((lr.id < 0) || (((1 << lr.id) & fl) != 0)) {
