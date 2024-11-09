@@ -441,7 +441,7 @@ public class MCache {
                         int fp = rnd.nextInt();
                         int rp = rnd.nextInt();
                         double a = rnd.nextDouble();
-                        if (set.flavobjs.size() > 0) {
+                        if (set != null && set.flavobjs.size() > 0) {
                             if ((fp % set.flavprob) == 0) {
                                 Indir<Resource> r = set.flavobjs.pick(rp % set.flavobjs.tw);
                                 if (Config.hideflovisual) {

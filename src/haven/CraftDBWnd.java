@@ -29,9 +29,9 @@ import static haven.CraftDBWnd.Mode.History;
 
 public class CraftDBWnd extends Window implements DTarget2, ObservableListener<Pagina>, ReadLine.Owner {
     private static final int PANEL_H = 52;
-    private static final Coord WND_SZ = new Coord(635, 360 + PANEL_H);
-    private static final Coord ICON_SZ = new Coord(20, 20);
-    private static final int LIST_SIZE = (WND_SZ.y - PANEL_H) / ICON_SZ.y;
+    private static final Coord WND_SZ = UI.scale(635, 360 + PANEL_H);
+    private static final Coord ICON_SZ = UI.scale(20, 20);
+    private static final int LIST_SIZE = UI.scale((WND_SZ.y - PANEL_H) / ICON_SZ.y);
     private final List<MenuGrid.Pagina> all = new ArrayList<>();
 
     private static final String CONFIG_JSON = "favourites.json";
@@ -169,8 +169,8 @@ public class CraftDBWnd extends Window implements DTarget2, ObservableListener<P
             protected void selected(Button<Mode> button) {
                 changeMode(button.tag);
             }
-        }, 0, 2);
-        Coord icon_sz = new Coord(20, 20);
+        }, 0, UI.scale(2));
+        Coord icon_sz = UI.scale(20, 20);
         Mode[] modes = Mode.values();
         for (int i = 0; i < modes.length; i++) {
             Resource.Named inres = modes[i].res;
@@ -184,7 +184,7 @@ public class CraftDBWnd extends Window implements DTarget2, ObservableListener<P
             tabStrip.insert(i, texI, n).tag = modes[i];
         }
 
-        box = add(new RecipeListBox(200, LIST_SIZE) {
+        box = add(new RecipeListBox(UI.scale(200), LIST_SIZE) {
             @Override
             protected void itemclick(Recipe recipe, int button) {
                 Pagina item = recipe.p;
@@ -212,7 +212,7 @@ public class CraftDBWnd extends Window implements DTarget2, ObservableListener<P
                     }
                 }
             }
-        }, 0, PANEL_H + 5);
+        }, 0, UI.scale(PANEL_H + 5));
        /* addtwdg(add(new IButton("gfx/hud/btn-help", "","-d","-h"){
             @Override
             public void click() {
@@ -221,11 +221,11 @@ public class CraftDBWnd extends Window implements DTarget2, ObservableListener<P
         }));*/
         addBtn_base("gfx/hud/helpbtn", "Show Filter Help", () -> ItemFilter.showHelp(ui, ItemFilter.FILTER_HELP));
         add(new Label("To search, simply start typing your search query."), new Coord(tabStrip.sz.x, 0));
-        add(new Label("Click the ? in the upper right for details on search options."), new Coord(tabStrip.sz.x, 12));
+        add(new Label("Click the ? in the upper right for details on search options."), new Coord(tabStrip.sz.x, UI.scale(12)));
         btnFavourite = add(new ToggleButton(
                 "gfx/hud/btn-star-e", "", "-d", "-h",
                 "gfx/hud/btn-star-f", "", "-d", "-h"
-        ), box.c.x + box.sz.x + 10, box.c.y + 3);
+        ), box.c.x + box.sz.x + UI.scale(10), box.c.y + UI.scale(3));
         btnFavourite.recthit = true;
         btnFavourite.action(this::toggleFavourite);
 
@@ -240,7 +240,7 @@ public class CraftDBWnd extends Window implements DTarget2, ObservableListener<P
                 select(data, false, false);
                 ui.gui.menu.use(data.button(), new MenuGrid.Interaction(),false);
             }
-        }, new Coord(0, 28));
+        }, UI.scale(0, 28));
         Pagina selected = current;
         if (selected == null) {
             selected = menu.cur;
@@ -440,12 +440,12 @@ public class CraftDBWnd extends Window implements DTarget2, ObservableListener<P
         }
         if (description == null) {
             try {
-                description = ItemData.longtip(descriptionPagina, ui.sess, 20, 5);
+                description = ItemData.longtip(descriptionPagina, ui.sess, UI.scale(20), UI.scale(5));
             } catch (Loading ignored) {
             }
         }
         if (description != null) {
-            g.image(description, new Coord(box.c.x + box.sz.x + 10, PANEL_H + 5));
+            g.image(description, new Coord(box.c.x + box.sz.x + UI.scale(10), UI.scale(PANEL_H + 5)));
         }
     }
 
@@ -508,7 +508,7 @@ public class CraftDBWnd extends Window implements DTarget2, ObservableListener<P
     }
 
     public void setMakewindow(Widget widget) {
-        makewnd = add(widget, new Coord(box.c.x + box.sz.x + 10, box.c.y + box.sz.y - widget.sz.y));
+        makewnd = add(widget, new Coord(box.c.x + box.sz.x + UI.scale(10), box.c.y + box.sz.y - widget.sz.y));
     }
 
     private Pagina paginafor(Resource.Named res) {
@@ -675,7 +675,7 @@ public class CraftDBWnd extends Window implements DTarget2, ObservableListener<P
                     }
                     BufferedImage text = Text.render(name).img;
 
-                    tex = new TexI(ItemInfo.catimgsh(3, icon, text));
+                    tex = new TexI(ItemInfo.catimgsh(UI.scale(3), icon, text));
                 }
 
             }
