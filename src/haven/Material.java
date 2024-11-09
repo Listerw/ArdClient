@@ -362,7 +362,7 @@ public class Material extends GLState {
                 id = (args.length > 2) ? Utils.iv(args[2]) : -1;
             } else {
                 lres = res.indir();
-                id = (Integer) args[0];
+                id = Utils.iv(args[0]);
             }
             return (new Res.Resolver() {
                 @Override
@@ -471,8 +471,10 @@ public class Material extends GLState {
                     ResCons2 cons = rnames.get(nm);
                     if (cons != null)
                         ret.left.add(cons.cons(res, args));
-                    else
-                        new Resource.LoadWarning(res, "unknown material part name in %s: %s", res.name, nm).issue();
+                    else {
+                        dev.simpleLog(new Resource.LoadWarning(res, "unknown material part name in %s: %s", res.name, nm));
+                        //new Resource.LoadWarning(res, "unknown material part name in %s: %s", res.name, nm).issue();
+                    }
                 }
             }
             return (ret);

@@ -29,12 +29,11 @@ package haven;
 import haven.glsl.ShaderMacro;
 import haven.glsl.Tex2D;
 import haven.glsl.Varying;
+import modification.dev;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import static haven.GOut.checkerr;
 
@@ -448,6 +447,7 @@ public abstract class TexGL extends Tex {
                         if (img != null) {
                             tex = img.tex();
                         } else {
+                            dev.simpleLog(new RuntimeException(String.format("Specified texture %d for %s not found in %s", tid, res, tres)));
 //                            throw (new RuntimeException(String.format("Specified texture %d for %s not found in %s", tid, res, tres)));
                         }
                     }
