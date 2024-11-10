@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -111,7 +112,7 @@ public class MappingClient {
 
     private MappingClient(String accName) {
         this.username = accName;
-        scheduler.scheduleAtFixedRate(pu, 5L, 5L, TimeUnit.SECONDS);
+        execute(scheduler, () -> scheduler.scheduleAtFixedRate(pu, 5L, 5L, TimeUnit.SECONDS));
     }
 
     public String endpoint;
@@ -160,7 +161,7 @@ public class MappingClient {
     public void EnterGrid(Coord gc) {
         lastGC = gc;
         GetMapRef(true);
-        scheduler.execute(new GenerateGridUpdateTask(gc));
+        execute(scheduler, () -> scheduler.execute(new GenerateGridUpdateTask(gc)));
     }
 
     /***
@@ -188,7 +189,7 @@ public class MappingClient {
                 long id = Glob.getByReference(username).map.getgrid(gc).id;
                 MapRef mapRef = cache.get(id);
                 if (mapRef == null && remote) {
-                    scheduler.execute(new Locate(id));
+                    execute(scheduler, () -> scheduler.execute(new Locate(id)));
                 }
                 lastMapRef = mapRef;
                 return mapRef;
@@ -248,7 +249,7 @@ public class MappingClient {
      * @param uploadCheck
      */
     public void ProcessMap(MapFile mapfile, Predicate<Marker> uploadCheck) {
-        scheduler.schedule(new ExtractMapper(mapfile, uploadCheck), 5, TimeUnit.SECONDS);
+        execute(scheduler, () -> scheduler.schedule(new ExtractMapper(mapfile, uploadCheck), 5, TimeUnit.SECONDS));
     }
 
     private class ExtractMapper implements Runnable {
@@ -279,7 +280,7 @@ public class MappingClient {
                 } catch (Exception ex) {
                     if (retries-- > 0) {
                         dev.simpleLog("rescheduling upload");
-                        scheduler.schedule(this, 5, TimeUnit.SECONDS);
+                        execute(scheduler, () -> scheduler.schedule(this, 5, TimeUnit.SECONDS));
                     }
                     return;
                 } finally {
@@ -287,18 +288,18 @@ public class MappingClient {
                 }
                 dev.simpleLog("collected " + markers.size() + " markers");
 
-                scheduler.execute(new ProcessMapper(mapfile, markers));
+                execute(scheduler, () -> scheduler.execute(new ProcessMapper(mapfile, markers)));
             } else {
                 if (retries-- > 0) {
                     dev.simpleLog("rescheduling upload");
-                    scheduler.schedule(this, 5, TimeUnit.SECONDS);
+                    execute(scheduler, () -> scheduler.schedule(this, 5, TimeUnit.SECONDS));
                 }
             }
         }
     }
 
     public void Sendmarker(MapFile mapfile, Marker marker) {
-        scheduler.execute(new ExtractMapper1(mapfile, marker));
+        execute(scheduler, () -> scheduler.execute(new ExtractMapper1(mapfile, marker)));
     }
 
     private class ExtractMapper1 implements Runnable {
@@ -323,7 +324,7 @@ public class MappingClient {
                 } catch (Exception ex) {
                     if (retries-- > 0) {
                         dev.simpleLog("rescheduling upload");
-                        scheduler.schedule(this, 5, TimeUnit.SECONDS);
+                        execute(scheduler, () -> scheduler.schedule(this, 5, TimeUnit.SECONDS));
                     }
                     return;
                 } finally {
@@ -331,11 +332,11 @@ public class MappingClient {
                 }
                 dev.simpleLog("collected " + marker);
 
-                scheduler.execute(new ProcessMapper(mapfile, Collections.singletonList(marker)));
+                execute(scheduler, () -> scheduler.execute(new ProcessMapper(mapfile, Collections.singletonList(marker))));
             } else {
                 if (retries-- > 0) {
                     dev.simpleLog("rescheduling upload");
-                    scheduler.schedule(this, 5, TimeUnit.SECONDS);
+                    execute(scheduler, () -> scheduler.schedule(this, 5, TimeUnit.SECONDS));
                 }
             }
         }
@@ -402,13 +403,13 @@ public class MappingClient {
             }
             dev.simpleLog("scheduling marker upload");
             try {
-                scheduler.execute(new MarkerUpdate(new JSONArray(loadedMarkers.toArray())));
+                execute(scheduler, () -> scheduler.execute(new MarkerUpdate(new JSONArray(loadedMarkers.toArray()))));
             } catch (Exception ex) {
                 dev.simpleLog(ex);
             }
 
             if (failed)
-                scheduler.execute(this);
+                execute(scheduler, () -> scheduler.execute(this));
         }
     }
 
@@ -551,10 +552,10 @@ public class MappingClient {
                     error.waitfor(() -> {
                         retries--;
                         if (retries >= 0) {
-                            scheduler.schedule(this, 250L, TimeUnit.MILLISECONDS);
+                            execute(scheduler, () -> scheduler.schedule(this, 250L, TimeUnit.MILLISECONDS));
                         }
                     }, w -> {});
-                } else scheduler.execute(new UploadGridUpdateTask(new GridUpdate(gridMap, gridRefs)));
+                } else execute(scheduler, () -> scheduler.execute(new UploadGridUpdateTask(new GridUpdate(gridMap, gridRefs))));
             }
         }
     }
@@ -604,7 +605,8 @@ public class MappingClient {
                         JSONArray reqs = jo.optJSONArray("gridRequests");
                         if (reqs != null) {
                             for (int i = 0; i < reqs.length(); i++) {
-                                gridsUploader.execute(new GridUploadTask(reqs.getString(i), gridUpdate.gridRefs.get(reqs.getString(i))));
+                                final int finalI = i;
+                                execute(gridsUploader, () -> gridsUploader.execute(new GridUploadTask(reqs.getString(finalI), gridUpdate.gridRefs.get(reqs.getString(finalI)))));
                             }
                         }
                     }
@@ -660,7 +662,7 @@ public class MappingClient {
                 // Retry on Loading
                 ex.waitfor(() -> {
                     if (retries-- > 0) {
-                        gridsUploader.submit(this);
+                        execute(gridsUploader, () -> gridsUploader.submit(this));
                     }
                 }, w -> {});
             }
@@ -693,5 +695,11 @@ public class MappingClient {
         public String toString() {
             return (gc.toString() + " in map space " + mapID);
         }
+    }
+
+    public void execute(final ExecutorService exec, final Runnable run) {
+        if (exec.isShutdown() || exec.isTerminated())
+            return;
+        run.run();
     }
 }
