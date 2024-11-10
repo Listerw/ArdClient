@@ -53,8 +53,8 @@ public class FlowerMenu extends Widget {
     public Petal[] opts;
     private UI.Grab mg, kg;
     private static String nextAutoSel;
-    private static int nextAutoSelI;
-    private static boolean nextAutoSelb;
+    private static int nextAutoSelI = -1;
+    private static boolean nextAutoSelb = false;
     private static long nextAutoSelTimeout;
     public static String lastSel;
     public Thread horsemounter;
