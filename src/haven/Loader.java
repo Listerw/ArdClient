@@ -90,33 +90,37 @@ public class Loader {
                                 return;
                             }*/
                             curload = l;
-                            l.waitfor(() -> {
-                                        synchronized (queue) {
-                                            if (loading.remove(this) != null) {
-                                                curload = null;
-                                                queue.add(this);
-                                                queue.notify();
+                            try {
+                                l.waitfor(() -> {
+                                            synchronized (queue) {
+                                                if (loading.remove(this) != null) {
+                                                    curload = null;
+                                                    queue.add(this);
+                                                    queue.notify();
+                                                }
                                             }
-                                        }
-                                        check();
-                                    },
-                                    wait -> {
-                                        boolean ck = false;
-                                        synchronized (queue) {
-                                            if (restarted) {
-                                                curload = null;
-                                                queue.add(this);
-                                                queue.notify();
-                                                ck = true;
-                                                restarted = false;
-                                            } else {
-                                                if (loading.put(this, wait) != null)
-                                                    throw (new AssertionError());
-                                            }
-                                        }
-                                        if (ck)
                                             check();
-                                    });
+                                        },
+                                        wait -> {
+                                            boolean ck = false;
+                                            synchronized (queue) {
+                                                if (restarted) {
+                                                    curload = null;
+                                                    queue.add(this);
+                                                    queue.notify();
+                                                    ck = true;
+                                                    restarted = false;
+                                                } else {
+                                                    if (loading.put(this, wait) != null)
+                                                        throw (new AssertionError());
+                                                }
+                                            }
+                                            if (ck)
+                                                check();
+                                        });
+                            } catch (Loading.UnwaitableEvent e) {
+                                defer(this);
+                            }
                         }
                     } catch (Throwable exc) {
                         synchronized (this) {
@@ -230,6 +234,14 @@ public class Loader {
                 pool.add(th);
             }
         }
+    }
+
+    public <T> void defer(Future<T> ret) {
+        synchronized (queue) {
+            queue.add(ret);
+            queue.notify();
+        }
+        check();
     }
 
     public <T> Future<T> defer(Supplier<T> task, boolean capex) {
