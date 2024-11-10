@@ -509,6 +509,8 @@ public class CraftDBWnd extends Window implements DTarget2, ObservableListener<P
 
     public void setMakewindow(Widget widget) {
         makewnd = add(widget, new Coord(box.c.x + box.sz.x + UI.scale(10), box.c.y + box.sz.y - widget.sz.y));
+        pack();
+        presize();
     }
 
     private Pagina paginafor(Resource.Named res) {

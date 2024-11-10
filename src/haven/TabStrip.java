@@ -148,7 +148,7 @@ public class TabStrip<T> extends Widget {
     }
 
     public abstract static class Button<T> extends Widget {
-        public static final Coord padding = new Coord(5, 2);
+        public static final Coord padding = UI.scale(5, 2);
         public static final Text.Foundry font = new Text.Foundry(Text.dfont, UI.scale(14)).aa(true);
         private Color bg = new Color(0, 0, 0, 128);
         private Tex image;
@@ -160,9 +160,9 @@ public class TabStrip<T> extends Widget {
         Button(Tex image, String text) {
             this.image = image;
             this.text = font.render(text);
-            int w = this.text.sz().x + this.image.sz().x + padding.x * 2;
+            int w = this.text.sz().x + this.image.sz().x + padding.x * UI.scale(2);
             if (text != null && !text.isEmpty()) {
-                w += 10; // space between image and text
+                w += UI.scale(10); // space between image and text
             }
             int h = Math.max(this.text.sz().y, this.image.sz().y) + padding.y * 2;
             resize(w, h);
@@ -184,7 +184,7 @@ public class TabStrip<T> extends Widget {
             }
             frame.draw(g, Coord.z, sz);
             g.image(image, padding);
-            g.image(text.tex(), new Coord(image.sz().x + 10, padding.y));
+            g.image(text.tex(), new Coord(image.sz().x + UI.scale(10), padding.y));
         }
 
         @Override

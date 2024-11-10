@@ -615,11 +615,13 @@ public class MenuGrid extends Widget {
                 }
                 open.add(pag);
             }
-            for (Pagina pag : pmap.values()) {
-                try {
-                    for (Pagina npag = pag; npag != null; npag = npag.parent())
-                        npag.tnew = Math.max(npag.tnew, pag.anew);
-                } catch (Loading l) {
+            synchronized (pmap) {
+                for (Pagina pag : pmap.values()) {
+                    try {
+                        for (Pagina npag = pag; npag != null; npag = npag.parent())
+                            npag.tnew = Math.max(npag.tnew, pag.anew);
+                    } catch (Loading l) {
+                    }
                 }
             }
         }
