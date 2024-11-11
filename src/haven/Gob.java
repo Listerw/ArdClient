@@ -32,6 +32,7 @@ import haven.overlays.newPlantStageSprite;
 import haven.purus.gobText;
 import haven.res.gfx.fx.floatimg.DamageText;
 import haven.res.lib.tree.Tree;
+import haven.res.lib.tree.TreeScale;
 import haven.res.lib.vmat.Materials;
 import haven.res.lib.vmat.VarSprite;
 import haven.res.ui.obj.buddy.Buddy;
@@ -767,6 +768,12 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
      * @param name The res name
      */
     private void discovered(final String name) {
+        if (Deleted.isDeleted(name)) {
+            //We don't care about these gobs, tell OCache to start the removal process
+            dispose();
+            glob.oc.remove(this);
+            return;
+        }
         disableAnimation1 = configuration.checkDisableAnimation1(id);
         disableAnimation = configuration.checkDisableAnimation(name);
         {
@@ -1088,7 +1095,10 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
             sb.append("GAttribs: ").append(attr.size()).append("\n");
             for (GAttrib ga : attr.values()) {
                 if (ga != null) {
-                    sb.append("ga: ").append("[").append(ga).append("]");
+                    if (ga instanceof TreeScale)
+                        sb.append("ga: ").append("[TreeScale: ").append(((TreeScale) ga).scale).append("]");
+                    else
+                        sb.append("ga: ").append("[").append(ga).append("]");
                     sb.append("\n");
                 }
             }
@@ -1580,7 +1590,7 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
         String name;
         Map<String, Boolean> matches = Collections.synchronizedMap(new HashMap<>());
     }
-    
+
     static boolean matches(AtomicReference<SavedMatches> matches, Supplier<String> getter, String regex) {
         synchronized (matches) {
             SavedMatches saved = matches.get();
@@ -2021,8 +2031,8 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
                             }
                             */
 
-                            int minStage = (type == Type.TREE ? 10 : 30);
-                            int growPercents = (int) Math.ceil((float) (fscale - minStage) / (float) (100 - minStage) * 100f);
+                            //int minStage = (type == Type.TREE ? 10 : 30);
+                            int growPercents = (int) Math.ceil((float) (fscale/* - minStage*/) / (float) (100/* - minStage*/) * 100f);
                             if (plantOl == null) {
                                 addol(new Gob.Overlay(this, Sprite.GROWTH_STAGE_ID, new TreeStageSprite(growPercents)));
                             } else if (((TreeStageSprite) plantOl.spr).val != growPercents) {

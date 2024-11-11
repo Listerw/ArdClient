@@ -4,7 +4,7 @@ import java.awt.Color;
 
 
 public class TreeStageSprite extends Sprite {
-    private static final Tex[] treestg = new Tex[1000];
+    private static final Tex[] treestg = new Tex[300];
     private static final Color stagecolor = new Color(115, 255, 25);
     private static final Tex growth = Resource.local().loadwait("gfx/hud/rosters/growth").layer(Resource.imgc).tex();
     public int val;
@@ -16,8 +16,9 @@ public class TreeStageSprite extends Sprite {
     private Camera camp;
 
     static {
-        for (int i = 0; i < 100; i++) {
-            treestg[i] = PUtils.strokeTex(Text.num12boldFnd.render(i + "%", stagecolor));
+        for (int i = 0; i < treestg.length; i++) {
+            if (i != 100)
+                treestg[i] = PUtils.strokeTex(Text.num12boldFnd.render(i + "%", stagecolor));
         }
     }
 
