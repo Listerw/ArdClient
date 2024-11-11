@@ -2030,9 +2030,9 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
                                 ((TreeStageSprite) ol.spr).update(fscale);
                             }
                             */
-
-                            //int minStage = (type == Type.TREE ? 10 : 30);
-                            int growPercents = (int) Math.ceil((float) (fscale/* - minStage*/) / (float) (100/* - minStage*/) * 100f);
+                            fscale = (fscale + 255) % 255;
+                            int minStage = (type == Type.TREE ? 10 : 30);
+                            int growPercents = (int) Math.ceil((float) (fscale - minStage) / (float) (100 - minStage) * 100f);
                             if (plantOl == null) {
                                 addol(new Gob.Overlay(this, Sprite.GROWTH_STAGE_ID, new TreeStageSprite(growPercents)));
                             } else if (((TreeStageSprite) plantOl.spr).val != growPercents) {
