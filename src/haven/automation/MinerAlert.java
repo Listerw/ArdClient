@@ -247,18 +247,18 @@ public class MinerAlert extends Window {
                                 for (Gob support : supportlist) {
                                     double distFromPlayer = support.rc.dist(PBotUtils.player(ui).rc);
                                     if (distFromPlayer <= 13 * 11) {    //support is less than or equal to 13 tiles from current player position, check it's HP
-                                        if (support.getattr(GobHealth.class) != null && support.getattr(GobHealth.class).hp <= 2 && SupportsHalf.a) {
+                                        if (support.getattr(GobHealth.class) != null && support.getattr(GobHealth.class).hp <= 2f / 4 && SupportsHalf.a) {
                                             PBotUtils.debugMsg(ui, "Detected mine support at 50% or less HP", Color.ORANGE);
-                                            support.addol(new Mark(4000));
+                                            support.addol(new Mark(4500));
                                             support.delattr(GobHighlight.class);
                                             support.setattr(new GobHighlight(support));
                                             if (PBotGobAPI.player(ui).getPoses().contains("gfx/borka/choppan") || PBotGobAPI.player(ui).getPoses().contains("gfx/borka/pickan")) {
                                                 ui.root.wdgmsg("gk", 27);
                                                 Audio.play(supportalertsfx);
                                             }
-                                        } else if (support.getattr(GobHealth.class) != null && support.getattr(GobHealth.class).hp <= 1 && SupportsQuarter.a) {
+                                        } else if (support.getattr(GobHealth.class) != null && support.getattr(GobHealth.class).hp <= 1f / 4 && SupportsQuarter.a) {
                                             PBotUtils.debugMsg(ui, "Detected mine support at 25% or less HP less than 13 tiles away", Color.RED);
-                                            support.addol(new Mark(4000));
+                                            support.addol(new Mark(4500));
                                             support.delattr(GobHighlight.class);
                                             support.setattr(new GobHighlight(support));
                                             if (PBotGobAPI.player(ui).getPoses().contains("gfx/borka/choppan") || PBotGobAPI.player(ui).getPoses().contains("gfx/borka/pickan")) {
@@ -290,7 +290,7 @@ public class MinerAlert extends Window {
                                                 final Coord2d mc2 = new Coord2d(grid2.ul).add(offset.x, offset.y).mul(MCache.tilesz);
                                                 maxmarks--;
                                                 final Gob g2 = ui.sess.glob.oc.new ModdedGob(mc2, 0);
-                                                g2.addol(new Mark(4000));
+                                                g2.addol(new Mark(4500));
                                                 g2.addol(getCachedSprite(res.basename().substring(0, 1).toUpperCase() + res.basename().substring(1) + " " + smeltchance.get(res.basename()), 4000));
                                             });
                                         });
@@ -405,6 +405,7 @@ public class MinerAlert extends Window {
                             }
                             countiron = 0;
                             counttin = 0;
+                            countlead = 0;
                             countcopper = 0;
                             countgold = 0;
                             countsilver = 0;
@@ -419,7 +420,7 @@ public class MinerAlert extends Window {
                             for (Gob loose : looses) {
                                 if (!ignoredloose.contains(loose.id)) {
                                     PBotUtils.debugMsg(ui, "Detected loose rock. Beware!", Color.RED);
-                                    loose.addol(new Mark(4000));
+                                    loose.addol(new Mark(4500));
                                     loose.delattr(GobHighlight.class);
                                     loose.setattr(new GobHighlight(loose));
                                     ignoredloose.add(loose.id);
