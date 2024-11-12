@@ -196,6 +196,7 @@ public class configuration {
     public static boolean gridboxsprite = Utils.getprefb("gridboxsprite", false);
     public static int gridboxcolor = Utils.getprefi("gridboxcolor", new Color(192, 0, 0, 128).hashCode());
     public static float radiusheight = Utils.getpreff("radiusheight", 0.5f);
+    public static int minimumtreestage = Utils.getprefi("minimumtreestage", 101);
     public static int showtreeberryamb = Utils.getprefi("showtreeberryamb", Color.WHITE.hashCode());
     public static int showtreeberrydif = Utils.getprefi("showtreeberrydif", Color.BLUE.hashCode());
     public static int showtreeberryspc = Utils.getprefi("showtreeberryspc", Color.RED.hashCode());

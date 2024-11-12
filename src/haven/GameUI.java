@@ -2136,12 +2136,72 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
     }
 
     public void toggleTreeStage() {
-        Config.showplantgrowstage = !Config.showplantgrowstage;
+        /*Config.showplantgrowstage = !Config.showplantgrowstage;
         Utils.setprefb("showplantgrowstage", Config.showplantgrowstage);
         if (!Config.showplantgrowstage && map != null)
             map.removeCustomSprites(Sprite.GROWTH_STAGE_ID);
         if (map != null)
-            map.refreshGobsGrowthStages();
+            map.refreshGobsGrowthStages();*/
+
+        List<Window> wnds = PBotWindowAPI.getWindows(ui, "Growth Stage");
+        if (!wnds.isEmpty()) {
+            wnds.forEach(Window::close);
+            return;
+        }
+        Window w = new Window(Coord.z, "Growth Stage");
+        WidgetVerticalAppender wva = new WidgetVerticalAppender(w);
+        wva.addRow(new CheckBox("Show Plant Grow Stage", val -> {
+            Utils.setprefb("showplantgrowstage", Config.showplantgrowstage = val);
+            if (!val && map != null)
+                map.removeCustomSprites(Sprite.GROWTH_STAGE_ID);
+            if (map != null)
+                map.refreshGobsGrowthStages();
+        }, Config.showplantgrowstage));
+        wva.add(new CheckBox("New overlay for plant stage") {
+            {
+                a = configuration.newCropStageOverlay;
+            }
+
+            public void set(boolean val) {
+                Utils.setprefb("newCropStageOverlay", val);
+                configuration.newCropStageOverlay = val;
+                a = val;
+            }
+        });
+        wva.add(new CheckBox("Display stage 1 (fresh planted) crops when crop stage overlay enabled.") {
+            {
+                a = Config.showfreshcropstage;
+            }
+
+            public void set(boolean val) {
+                Utils.setprefb("showfreshcropstage", val);
+                Config.showfreshcropstage = val;
+                a = val;
+            }
+        });
+        wva.addRow(new CheckBox("Show Tree Grow Stage", val -> {
+            Utils.setprefb("showtreegrowstage", Config.showtreegrowstage = val);
+            if (!val && map != null)
+                map.removeCustomSprites(Sprite.GROWTH_STAGE_ID2);
+            if (map != null)
+                map.refreshGobsGrowthStages2();
+        }, Config.showtreegrowstage));
+        Label text = new Label(configuration.minimumtreestage + "");
+        wva.addRow(new Label("Tree minimum:"), new HSlider(UI.scale(100), 100, 200, (int) (configuration.minimumtreestage)) {
+            @Override
+            public void changed() {
+                Utils.setprefi("minimumtreestage", configuration.minimumtreestage = val);
+                text.settext(configuration.minimumtreestage + "");
+            }
+
+            @Override
+            public Object tooltip(final Coord c, final Widget prev) {
+                return (configuration.minimumtreestage + "");
+            }
+        }, text);
+        w.pack();
+
+        adda(w, sz.div(2), 0.5, 0.5);
     }
 
     public void toggleSearch() {

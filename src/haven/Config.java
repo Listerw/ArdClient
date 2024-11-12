@@ -180,6 +180,7 @@ public class Config {
     public static boolean showgobhp = Utils.getprefb("showgobhp", true);
     public static boolean showgobquality = Utils.getprefb("showgobquality", true);
     public static boolean showplantgrowstage = Utils.getprefb("showplantgrowstage", false);
+    public static boolean showtreegrowstage = Utils.getprefb("showtreegrowstage", false);
     public static boolean showfreshcropstage = Utils.getprefb("showfreshcropstage", false);
     public static boolean notifykinonline = Utils.getprefb("notifykinonline", true);
     public static boolean autosortkinlist = Utils.getprefb("autosortkinlist", true);

@@ -50,7 +50,7 @@ public class TreeStageSprite extends Sprite {
 
     public void update(int val) {
         this.val = val;
-        if (val >= 0 && val != 100) {
+        if (val >= 0) {
             tex = tex(val);
         }
     }

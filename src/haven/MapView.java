@@ -3818,7 +3818,15 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
     public void refreshGobsGrowthStages() {
         OCache oc = glob.oc;
         for (Gob gob : oc.getallgobs()) {
-            if (gob.type == Type.PLANT || gob.type == Type.MULTISTAGE_PLANT || gob.type == Type.TREE || gob.type == Type.BUSH)
+            if (gob.type == Type.PLANT || gob.type == Type.MULTISTAGE_PLANT)
+                oc.changed(gob);
+        }
+    }
+
+    public void refreshGobsGrowthStages2() {
+        OCache oc = glob.oc;
+        for (Gob gob : oc.getallgobs()) {
+            if (gob.type == Type.TREE || gob.type == Type.BUSH)
                 oc.changed(gob);
         }
     }

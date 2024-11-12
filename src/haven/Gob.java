@@ -2017,7 +2017,11 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
                         ((PlantStageSprite) plantOl.spr).update(stage, cropstgmaxval);
                     }
                 }
-
+            } else if (plantOl != null)
+                remol(plantOl);
+            Overlay treeOl = findol(Sprite.GROWTH_STAGE_ID2);
+            trees:
+            if (Config.showtreegrowstage) {
                 if (type == Type.TREE || type == Type.BUSH) {
                     ResDrawable rd = getattr(ResDrawable.class);
                     if (rd != null) {
@@ -2033,16 +2037,20 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
                             fscale = (fscale + 255) % 255;
                             int minStage = (type == Type.TREE ? 10 : 30);
                             int growPercents = (int) Math.ceil((float) (fscale - minStage) / (float) (100 - minStage) * 100f);
-                            if (plantOl == null) {
-                                addol(new Gob.Overlay(this, Sprite.GROWTH_STAGE_ID, new TreeStageSprite(growPercents)));
-                            } else if (((TreeStageSprite) plantOl.spr).val != growPercents) {
-                                ((TreeStageSprite) plantOl.spr).update(growPercents);
+                            if (treeOl == null) {
+                                if (growPercents >= configuration.minimumtreestage)
+                                    addol(new Gob.Overlay(this, Sprite.GROWTH_STAGE_ID, new TreeStageSprite(growPercents)));
+                            } else if (((TreeStageSprite) treeOl.spr).val != growPercents) {
+                                if (growPercents >= configuration.minimumtreestage)
+                                    ((TreeStageSprite) treeOl.spr).update(growPercents);
+                                else
+                                    remol(treeOl);
                             }
                         }
                     }
                 }
-            } else if (plantOl != null)
-                remol(plantOl);
+            } else if (treeOl != null)
+                remol(treeOl);
             if (Config.stranglevinecircle && type == Type.STRANGLEVINE) {
                 if (!ols.isEmpty())
                     return (false);

@@ -980,28 +980,6 @@ public class OptWnd extends Window {
                 }
             }
         });
-        appender.add(new CheckBox("New overlay for plant stage") {
-            {
-                a = configuration.newCropStageOverlay;
-            }
-
-            public void set(boolean val) {
-                Utils.setprefb("newCropStageOverlay", val);
-                configuration.newCropStageOverlay = val;
-                a = val;
-            }
-        });
-        appender.add(new CheckBox("Display stage 1 (fresh planted) crops when crop stage overlay enabled.") {
-            {
-                a = Config.showfreshcropstage;
-            }
-
-            public void set(boolean val) {
-                Utils.setprefb("showfreshcropstage", val);
-                Config.showfreshcropstage = val;
-                a = val;
-            }
-        });
         appender.add(new CheckBox("Display kin names") {
             {
                 a = Config.showkinnames;
