@@ -770,8 +770,8 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
     private void discovered(final String name) {
         if (Deleted.isDeleted(name)) {
             //We don't care about these gobs, tell OCache to start the removal process
-            dispose();
-            glob.oc.remove(this);
+            //dispose();
+            //glob.oc.remove(this);
             return;
         }
         disableAnimation1 = configuration.checkDisableAnimation1(id);
@@ -974,6 +974,7 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
     }
 
     public void ctick(int dt) {
+        if (Deleted.isDeleted(name())) return;
         final Hidden hid = getattr(Hidden.class);
         if (!(hid != null && Config.hideuniquegobs) || configuration.showhiddenoverlay) {
             if (!discovered) {
@@ -1294,6 +1295,7 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
     }
 
     public void tick() {
+        if (Deleted.isDeleted(name())) return;
         synchronized (attr) {
             for (GAttrib a : attr.values())
                 a.tick();
@@ -1619,6 +1621,7 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
 
     @Override
     public boolean setup(RenderList rl) {
+        if (Deleted.isDeleted(name())) return (false);
         loc.tick();
         try {
             Collection<Location.Chain> ret = new ArrayList<>();
