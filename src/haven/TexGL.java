@@ -447,8 +447,8 @@ public abstract class TexGL extends Tex {
                         if (img != null) {
                             tex = img.tex();
                         } else {
-                            dev.simpleLog(new RuntimeException(String.format("Specified texture %d for %s not found in %s", tid, res, tres)));
-//                            throw (new RuntimeException(String.format("Specified texture %d for %s not found in %s", tid, res, tres)));
+                            //dev.simpleLog(new RuntimeException(String.format("Specified texture %d for %s not found in %s", tid, res, tres)));
+                            throw (new RuntimeException(String.format("Specified texture %d for %s not found in %s", tid, res, tres)));
                         }
                     }
                     if (tex != null) {
