@@ -3,6 +3,7 @@ package haven.res.lib.vmat;
 import haven.Gob;
 import haven.Indir;
 import haven.IntMap;
+import haven.Loading;
 import haven.Material;
 import haven.Message;
 import haven.Resource;
@@ -29,6 +30,8 @@ public class Materials extends Mapping {
                 else
                     mat = mres.get().layer(Material.Res.class);
                 ret.put(idx++, mat.get());
+            } catch (Loading e) {
+                throw e;
             } catch (Throwable e) {
                 dev.simpleLog(e);
                 idx++;

@@ -30,6 +30,7 @@ import haven.MorphedMesh.Morpher;
 import haven.Skeleton.Pose;
 import haven.Skeleton.PoseMod;
 import modification.configuration;
+import modification.dev;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -129,10 +130,16 @@ public class SkelSprite extends Sprite implements Gob.Overlay.CUpd, Skeleton.Has
         }
         for (RenderLink.Res lr : res.layers(RenderLink.Res.class)) {
             if ((lr.id < 0) || (((1 << lr.id) & mask) != 0)) {
-                Rendered r = lr.l.make();
-                if (r instanceof GLState.Wrapping)
-                    r = animwrap((GLState.Wrapping) r);
-                rl.add(r);
+                try {
+                    Rendered r = lr.l.make();
+                    if (r instanceof GLState.Wrapping)
+                        r = animwrap((GLState.Wrapping) r);
+                    rl.add(r);
+                } catch (Loading e) {
+                    throw (e);
+                } catch (Exception e) {
+                    dev.simpleLog(e);
+                }
             }
         }
         this.parts = rl.toArray(new Rendered[0]);

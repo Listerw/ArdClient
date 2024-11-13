@@ -2332,7 +2332,7 @@ public class Resource implements Serializable {
         return (o.name.equals(this.name) && (o.ver == this.ver));
     }
 
-    private static final List<String> depresList = Arrays.asList("gfx/hud/rosters/.*", "gfx/terobjs/cupboard", "gfx/terobjs/crate", "ui/inspect", "ui/croster", "lib/icave", "gfx/terobjs/", "gfx/terobjs/consobj.*", "ui/obj/buddy.*", "gfx/terobjs/peacebreaker.*", "gfx/terobjs/trees/pine", "gfx/terobjs/trees/kingsoak", "lib/vmat", "gfx/terobjs/arch/upstairs", "gfx/terobjs/trees/chestnuttree", "lib/svaj");
+    private static final List<String> depresList = Arrays.asList("gfx/hud/rosters/.*", "gfx/terobjs/cupboard", "gfx/terobjs/crate", "ui/inspect", "ui/croster", "lib/icave", "gfx/terobjs/", "gfx/terobjs/consobj.*", "ui/obj/buddy.*", "gfx/terobjs/peacebreaker.*", "gfx/terobjs/trees/pine", "gfx/terobjs/trees/kingsoak", "lib/vmat", "gfx/terobjs/arch/upstairs", "gfx/terobjs/trees/chestnuttree", "lib/svaj", "gfx/fx/ismoke", "gfx/terobjs/trees/walnuttree");
 
     private Object[] load(InputStream st) throws IOException {
         LoadException exception = null;
