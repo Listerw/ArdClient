@@ -109,8 +109,14 @@ public class UnivSprite extends Sprite implements Gob.Overlay.CUpd, Skeleton.Has
     public Collection<Rendered> iparts(int mask) {
         Collection<Rendered> rl = new ArrayList<Rendered>();
         for (FastMesh.MeshRes mr : res.layers(FastMesh.MeshRes.class)) {
-            if ((mr.mat != null) && ((mr.id < 0) || (((1 << mr.id) & mask) != 0)))
-                rl.add(mr.mat.get().apply(animmesh(mr.m)));
+            try {
+                if ((mr.mat != null) && ((mr.id < 0) || (((1 << mr.id) & mask) != 0)))
+                    rl.add(mr.mat.get().apply(animmesh(mr.m)));
+            } catch (Loading e) {
+                throw (e);
+            } catch (Throwable e) {
+                dev.simpleLog(e);
+            }
         }
         return (rl);
     }
@@ -120,11 +126,17 @@ public class UnivSprite extends Sprite implements Gob.Overlay.CUpd, Skeleton.Has
         for (Rendered r : iparts(mask))
             rl.add(r);
         for (RenderLink.Res lr : res.layers(RenderLink.Res.class)) {
-            if ((lr.id < 0) || (((1 << lr.id) & mask) != 0)) {
-                Rendered r = lr.l.make();
-                if (r instanceof GLState.Wrapping)
-                    r = animwrap(r);
-                rl.add(r);
+            try {
+                if ((lr.id < 0) || (((1 << lr.id) & mask) != 0)) {
+                    Rendered r = lr.l.make();
+                    if (r instanceof GLState.Wrapping)
+                        r = animwrap(r);
+                    rl.add(r);
+                }
+            } catch (Loading e) {
+                throw (e);
+            } catch (Throwable e) {
+                dev.simpleLog(e);
             }
         }
         this.parts = rl.toArray(new Rendered[0]);

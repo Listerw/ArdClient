@@ -125,21 +125,27 @@ public class SkelSprite extends Sprite implements Gob.Overlay.CUpd, Skeleton.Has
     private void chparts(int mask) {
         Collection<Rendered> rl = new LinkedList<>();
         for (FastMesh.MeshRes mr : res.layers(FastMesh.MeshRes.class)) {
-            if ((mr.mat != null) && ((mr.id < 0) || (((1 << mr.id) & mask) != 0)))
-                rl.add(animwrap(mr.mat.get().apply(mr.m)));
+            try {
+                if ((mr.mat != null) && ((mr.id < 0) || (((1 << mr.id) & mask) != 0)))
+                    rl.add(animwrap(mr.mat.get().apply(mr.m)));
+            } catch (Loading e) {
+                throw (e);
+            } catch (Throwable e) {
+                dev.simpleLog(e);
+            }
         }
         for (RenderLink.Res lr : res.layers(RenderLink.Res.class)) {
-            if ((lr.id < 0) || (((1 << lr.id) & mask) != 0)) {
-                try {
+            try {
+                if ((lr.id < 0) || (((1 << lr.id) & mask) != 0)) {
                     Rendered r = lr.l.make();
                     if (r instanceof GLState.Wrapping)
                         r = animwrap((GLState.Wrapping) r);
                     rl.add(r);
-                } catch (Loading e) {
-                    throw (e);
-                } catch (Exception e) {
-                    dev.simpleLog(e);
                 }
+            } catch (Loading e) {
+                throw (e);
+            } catch (Throwable e) {
+                dev.simpleLog(e);
             }
         }
         this.parts = rl.toArray(new Rendered[0]);
@@ -180,18 +186,24 @@ public class SkelSprite extends Sprite implements Gob.Overlay.CUpd, Skeleton.Has
         Skeleton.ModOwner mo = (owner instanceof Skeleton.ModOwner) ? (Skeleton.ModOwner) owner : Skeleton.ModOwner.nil;
         Map<Skeleton.ResPose, PoseMod> newids = new HashMap<>();
         for (Skeleton.ResPose p : res.layers(Skeleton.ResPose.class)) {
-            if ((p.id < 0) || ((mask & (1 << p.id)) != 0)) {
-                Skeleton.PoseMod mod;
-                if ((mod = modids.get(p)) == null) {
-                    mod = p.forskel(mo, skel, p.defmode);
-                    if (old)
-                        mod.age();
+            try {
+                if ((p.id < 0) || ((mask & (1 << p.id)) != 0)) {
+                    PoseMod mod;
+                    if ((mod = modids.get(p)) == null) {
+                        mod = p.forskel(mo, skel, p.defmode);
+                        if (old)
+                            mod.age();
+                    }
+                    if (p.id >= 0)
+                        newids.put(p, mod);
+                    if (!mod.stat())
+                        stat = false;
+                    poses.add(mod);
                 }
-                if (p.id >= 0)
-                    newids.put(p, mod);
-                if (!mod.stat())
-                    stat = false;
-                poses.add(mod);
+            } catch (Loading e) {
+                throw (e);
+            } catch (Throwable e) {
+                dev.simpleLog(e);
             }
         }
         this.mods = poses.toArray(new PoseMod[0]);
