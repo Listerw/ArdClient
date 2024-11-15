@@ -8,6 +8,7 @@ import haven.Gob;
 import static haven.OCache.posres;
 import haven.Resource;
 import haven.WItem;
+import haven.res.ui.stackinv.ItemStack;
 
 public class AddCoalToSmelter implements Runnable {
     private GameUI gui;
@@ -41,6 +42,12 @@ public class AddCoalToSmelter implements Runnable {
         }
 
         WItem coalw = gui.maininv.getItemPartial("Coal");
+        if (coalw.item.getname().contains(", stack of")) {
+            coalw = ((ItemStack) coalw.item.child).wmap.values().stream().findFirst().get();
+        }
+
+
+        coalw.item.getname();
         if (coalw == null) {
             gui.error("No coal found in the inventory");
             return;
