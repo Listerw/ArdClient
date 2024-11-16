@@ -569,12 +569,26 @@ public class Glob {
                             }
                             Resource r = ir.get();
                             if (r instanceof Resource.FakeResource) continue;
-                            Class<? extends Weather> cl = r.layer(Resource.CodeEntry.class).getcl(Weather.class);
                             Weather w;
                             try {
+                                Class<? extends Weather> cl = r.layer(Resource.CodeEntry.class).getcl(Weather.class);
                                 w = Utils.construct(cl.getConstructor(Object[].class), new Object[]{v});
-                            } catch (NoSuchMethodException e) {
-                                throw (new RuntimeException(e));
+                            } catch (Loading e) {
+                                throw (e);
+                            } catch (Throwable e) {
+                                dev.simpleLog(e);
+                                w = new Weather() {
+                                    @Override
+                                    public void gsetup(final RenderList rl) {}
+
+                                    @Override
+                                    public void update(final Object... args) {}
+
+                                    @Override
+                                    public boolean tick(final int dt) {
+                                        return (false);
+                                    }
+                                };
                             }
                             cur.setValue(n = w);
                         }

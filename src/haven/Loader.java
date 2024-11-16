@@ -27,6 +27,7 @@
 package haven;
 
 import haven.Waitable.Waiting;
+import modification.dev;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -119,6 +120,7 @@ public class Loader {
                                                 check();
                                         });
                             } catch (Loading.UnwaitableEvent e) {
+                                dev.simpleLog(e);
                                 defer(this);
                             }
                         }

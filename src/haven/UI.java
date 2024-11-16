@@ -268,22 +268,41 @@ public class UI {
         }
 
         Widget.Factory f;
-        if (parent == beltWndId)
-            f = Widget.gettype2("inv-belt");
-//        else if (type.startsWith("gfx/hud/rosters/"))
-//            f = Widget.gettype3(type);
-        else
-            f = Widget.gettype2(type);
-        if (f == null) {
-            dev.resourceLog("Bad widget name", type, cargs);
-            return;
+        try {
+            if (parent == beltWndId)
+                f = Widget.gettype2("inv-belt");
+    //        else if (type.startsWith("gfx/hud/rosters/"))
+    //            f = Widget.gettype3(type);
+            else
+                f = Widget.gettype2(type);
+            if (f == null) {
+                dev.resourceLog("Bad widget name", type, cargs);
+                return;
+            }
+        } catch (Loading e) {
+            throw (e);
+        } catch (Throwable e) {
+            dev.simpleLog(e);
+            f = new Widget.Factory() {
+                @Override
+                public Widget create(final UI ui, final Object[] par) {
+                    return (new Widget());
+                }
+            };
         }
         synchronized (this) {
             Widget wdg;
             if (type.startsWith("ui/maillist")) {
                 wdg = modification.Maillist.mkwidget(this, cargs);
             } else {
-                wdg = f.create(this, cargs);
+                try {
+                    wdg = f.create(this, cargs);
+                } catch (Loading e) {
+                    throw (e);
+                } catch (Throwable e) {
+                    dev.simpleLog(e);
+                    wdg = new Widget();
+                }
             }
             wdg.attach(this);
             if (parent != -1) {

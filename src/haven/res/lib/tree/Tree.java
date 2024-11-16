@@ -47,23 +47,31 @@ public class Tree extends Sprite {
         return (mkscale(s, s, s));
     }
 
-    public static Collection<Pair<Integer, Rendered>> lsparts(Resource res, int matsel) {
+    public Collection<Pair<Integer, Rendered>> lsparts(Resource res, int matsel) {
         Collection<Pair<Integer, Rendered>> rl = new ArrayList<>(16);
         for (FastMesh.MeshRes mr : res.layers(FastMesh.MeshRes.class)) {
-            int id = (mr.id < 0) ? 0 : mr.id;
-            int dmat = (id & 0xf0) >> 4;
-            if ((dmat == 0) || (matsel < 0)) {
-                if (mr.mat != null)
-                    rl.add(new Pair<>(id, mr.mat.get().apply(mr.m)));
-            } else {
-                Material.Res mat = res.layer(Material.Res.class, (dmat * 4) + matsel);
-                if (mat != null)
-                    rl.add(new Pair<>(id, mat.get().apply(mr.m)));
+            try {
+                int id = (mr.id < 0) ? 0 : mr.id;
+                int dmat = (id & 0xf0) >> 4;
+                if ((dmat == 0) || (matsel < 0)) {
+                    if (mr.mat != null)
+                        rl.add(new Pair<>(id, mr.mat.get().apply(mr.m)));
+                } else {
+                    Material.Res mat = res.layer(Material.Res.class, (dmat * 4) + matsel);
+                    if (mat != null)
+                        rl.add(new Pair<>(id, mat.get().apply(mr.m)));
+                }
+            } catch (Loading e) {
+                throw (e);
+            } catch (Throwable e) {
+                dev.simpleLog(e);
             }
         }
         for (RenderLink.Res lr : res.layers(RenderLink.Res.class)) {
             try {
-                rl.add(new Pair<>(lr.id, lr.l.make()));
+                rl.add(new Pair<>(lr.id, lr.l.make(owner)));
+            } catch (Loading e) {
+                throw (e);
             } catch (Throwable e) {
                 dev.simpleLog(e);
             }
@@ -72,7 +80,7 @@ public class Tree extends Sprite {
     }
 
     @SuppressWarnings("unchecked")
-    public static Rendered[][] mkparts(Resource res, int matsel, int fl) {
+    public Rendered[][] mkparts(Resource res, int matsel, int fl) {
         Collection<Rendered> rl[] = new Collection[3];
         for (int i = 0; i < rl.length; rl[i++] = new ArrayList<>()) ;
         int pmask = (1 << rl.length) - 1;

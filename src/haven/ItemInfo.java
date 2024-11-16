@@ -285,6 +285,33 @@ public abstract class ItemInfo {
                 }
             });
         }
+
+        public interface Dynamic {
+            public String name();
+        }
+
+        public static class Default implements InfoFactory {
+            public static String get(Owner owner) {
+                if (owner instanceof SpriteOwner) {
+                    GSprite spr = ((SpriteOwner) owner).sprite();
+                    if (spr instanceof Dynamic)
+                        return (((Dynamic) spr).name());
+                }
+                if (!(owner instanceof ResOwner))
+                    return (null);
+                Resource res = ((ResOwner) owner).resource();
+                Resource.Tooltip tt = res.layer(Resource.tooltip);
+                if (tt == null)
+                    throw (new RuntimeException("Item resource " + res + " is missing default tooltip"));
+                return (tt.t);
+            }
+
+            @Override
+            public ItemInfo build(Owner owner, Raw raw, Object... args) {
+                String nm = get(owner);
+                return ((nm == null) ? null : new Name(owner, nm));
+            }
+        }
     }
 
     public static class Pagina extends Tip {
