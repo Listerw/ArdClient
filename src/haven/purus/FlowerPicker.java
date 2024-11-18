@@ -29,6 +29,7 @@ public class FlowerPicker implements Runnable, ItemClickCallback, WItemDestroyCa
         synchronized (GobSelectCallback.class) {
             gui.registerItemCallback(this);
         }
+        gui.registerPetalCallback(this);
         String itemName = null;
         for (int retries = 0, time = 5000, sleep = 5; retries < time / sleep; retries++) {
             WItem item = this.item;
@@ -66,7 +67,6 @@ public class FlowerPicker implements Runnable, ItemClickCallback, WItemDestroyCa
                 if (target == null) {
                     itm.item.wdgmsg("iact", itm.c, 0);
                     if (PBotUtils.waitForFlowerMenu(gui.ui, 1000)) {
-                        gui.registerPetalCallback(this);
                         PBotUtils.debugMsg(gui.ui, "Choose your petal");
                         for (int retries = 0, time = 5000, sleep = 5; retries < time / sleep; retries++) {
                             FlowerMenu.Petal petal1 = this.petal;
