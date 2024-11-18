@@ -29,7 +29,6 @@ public class FlowerPicker implements Runnable, ItemClickCallback, WItemDestroyCa
         synchronized (GobSelectCallback.class) {
             gui.registerItemCallback(this);
         }
-        gui.registerPetalCallback(this);
         String itemName = null;
         for (int retries = 0, time = 5000, sleep = 5; retries < time / sleep; retries++) {
             WItem item = this.item;
@@ -65,6 +64,9 @@ public class FlowerPicker implements Runnable, ItemClickCallback, WItemDestroyCa
             if (PBotUtils.petalExists(gui.ui)) PBotUtils.closeFlowermenu(gui.ui, 500);
             if (itm.parent != null && ((Inventory) itm.parent).wmap.containsKey(itm.item)) {
                 if (target == null) {
+                    synchronized (PetalClickCallback.class) {
+                        gui.registerPetalCallback(this);
+                    }
                     itm.item.wdgmsg("iact", itm.c, 0);
                     if (PBotUtils.waitForFlowerMenu(gui.ui, 1000)) {
                         PBotUtils.debugMsg(gui.ui, "Choose your petal");
@@ -77,9 +79,15 @@ public class FlowerPicker implements Runnable, ItemClickCallback, WItemDestroyCa
                             PBotUtils.sleep(sleep);
                         }
                         if (petal == null) {
+                            synchronized (PetalClickCallback.class) {
+                                gui.unregisterPetalCallback();
+                            }
                             break;
                         }
                     } else {
+                        synchronized (PetalClickCallback.class) {
+                            gui.unregisterPetalCallback();
+                        }
                         continue;
                     }
                 }
@@ -87,7 +95,7 @@ public class FlowerPicker implements Runnable, ItemClickCallback, WItemDestroyCa
 //                    FlowerMenu.setNextSelection(target.name);
                     itm.item.wdgmsg("iact", itm.c, 0);
                     if (PBotUtils.waitForFlowerMenu(gui.ui, 1000)) {
-                        if (PBotUtils.choosePetal(gui.ui, target.name)) {
+                        if (PBotUtils.choosePetal(gui.ui, target.name)) {//fixme what to do with autoselect?
                             PBotUtils.waitFlowermenuClose(gui.ui, 500);
                         } else {
                             PBotUtils.closeFlowermenu(gui.ui, 500);
@@ -123,5 +131,6 @@ public class FlowerPicker implements Runnable, ItemClickCallback, WItemDestroyCa
             gui.unregisterPetalCallback();
         }
         this.petal = petal;
+        PBotUtils.debugMsg(gui.ui, "Petal: " + petal.name);
     }
 }
