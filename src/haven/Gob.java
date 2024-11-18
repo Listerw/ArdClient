@@ -2404,6 +2404,7 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
     private static final List<StorageMaterial> storageMaterialList = new ArrayList<>();
 
     static {
+        storageMaterialList.add(new StorageMaterial("/jotunclam", new Pair<>(113, storagefullcolormaterial), new Pair<>(114, storagefullcolormaterial), new Pair<>(1, storageemptycolormaterial), new Pair<>(2, storageemptycolormaterial), new Pair<>(-1, storagehalfcolormaterial)));
         storageMaterialList.add(new StorageMaterial("/cupboard", new Pair<>(29, storagefullcolormaterial), new Pair<>(30, storagefullcolormaterial), new Pair<>(1, storageemptycolormaterial), new Pair<>(2, storageemptycolormaterial), new Pair<>(-1, storagehalfcolormaterial)));
         storageMaterialList.add(new StorageMaterial("/metalcabinet", new Pair<>(65, storagefullcolormaterial), new Pair<>(66, storagefullcolormaterial), new Pair<>(1, storageemptycolormaterial), new Pair<>(2, storageemptycolormaterial), new Pair<>(-1, storagehalfcolormaterial)));
         storageMaterialList.add(new StorageMaterial("/chest", new Pair<>(29, storagefullcolormaterial), new Pair<>(30, storagefullcolormaterial), new Pair<>(1, storageemptycolormaterial), new Pair<>(2, storageemptycolormaterial), new Pair<>(-1, storagehalfcolormaterial)));
