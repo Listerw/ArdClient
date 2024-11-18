@@ -43,6 +43,9 @@ public class FlowerPicker implements Runnable, ItemClickCallback, WItemDestroyCa
         }
         if (itemName == null) {
             PBotUtils.debugMsg(gui.ui, "FlowerPicker timeout!", Color.RED);
+            synchronized (GobSelectCallback.class) {
+                gui.unregisterItemCallback();
+            }
             return;
         }
         ArrayList<WItem> itmList = new ArrayList<>();
