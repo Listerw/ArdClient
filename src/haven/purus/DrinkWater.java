@@ -44,13 +44,11 @@ public class DrinkWater implements Runnable {
             gui.drinkingWater = true;
             WItem drinkFromThis = null;
             Equipory e = gui.getequipory();
-            WItem l = e.quickslots[6];
-            WItem r = e.quickslots[7];
-            if (canDrinkFrom(l))
-                drinkFromThis = l;
-            if (drinkFromThis == null) {
-                if (canDrinkFrom(r))
-                    drinkFromThis = r;
+            for (WItem i : e.quickslots) {
+                if (canDrinkFrom(i)) {
+                    drinkFromThis = i;
+                    break;
+                }
             }
             if (drinkFromThis == null) {
                 for (Widget w = gui.lchild; w != null; w = w.prev) {
