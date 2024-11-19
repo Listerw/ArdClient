@@ -90,7 +90,7 @@ public class Entry extends Widget {
     public boolean mousedown(Coord c, int button) {
         if (super.mousedown(c, button))
             return (true);
-        getparent(CattleRoster.class).wdgmsg("click", (int) (id & 0x00000000ffffffffl), (int) ((id & 0xffffffff00000000l) >> 32), button, ui.modflags(), ui.mc);
+        getparent(CattleRoster.class).wdgmsg("click", id, button, ui.modflags(), ui.mc);
         return (true);
     }
 

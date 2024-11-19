@@ -66,8 +66,7 @@ public abstract class CattleRoster<T extends Entry> extends Widget {
             Collection<Object> args = new ArrayList<>();
             for (Entry entry : this.entries.values()) {
                 if (entry.mark.a) {
-                    args.add(Integer.valueOf((int) (entry.id & 0x00000000ffffffffl)));
-                    args.add(Integer.valueOf((int) ((entry.id & 0xffffffff00000000l) >> 32)));
+                    args.add(entry.id);
                 }
             }
             wdgmsg("rm", args.toArray(new Object[0]));
