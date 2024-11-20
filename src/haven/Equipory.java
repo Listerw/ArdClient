@@ -156,7 +156,7 @@ public class Equipory extends Widget implements DTarget {
             }
         }, new Coord(invsq.sz().x, 0));
         ava.color = null;
-        bonuses = add(new AttrBonusesWdg(bg.sz().sub(0, invsq.sz().y + 10)), invsq.sz().add(5, 5));
+        bonuses = add(new AttrBonusesWdg(bg.sz().sub(plus.sz.x * 2, invsq.sz().y + 20)), invsq.sz().add(plus.sz.x, 5));
         adda(plus, Coord.of(rx, 0), 1, 0);
         adda(minus, Coord.of(rx, 0), 1, 0);
         plus.hide();
