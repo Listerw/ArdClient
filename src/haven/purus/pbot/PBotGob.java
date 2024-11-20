@@ -11,16 +11,19 @@ import haven.Indir;
 import haven.LinMove;
 import haven.Loading;
 import haven.MapView;
-import static haven.OCache.posres;
 import haven.ResData;
 import haven.ResDrawable;
 import haven.Resource;
 import haven.UI;
 import haven.purus.gobText;
 import haven.sloth.script.pathfinding.Hitbox;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+
+import static haven.OCache.posres;
 
 public class PBotGob {
 
@@ -84,7 +87,7 @@ public class PBotGob {
      * @param button 1 = Left click, 3 = Right click
      * @param mod    0 = no modifier, 1 = shift, 2 = ctrl, 4 = alt
      * @param meshId can be a door, roasting spit etc.
-     * @param olid gob overlay to click, for example roasting spit.
+     * @param olid   gob overlay to click, for example roasting spit.
      */
     public void doClick(int button, int mod, int meshId, int olid) {//{pc, mc.floor(posres), clickb, modflags} + {0, (int) gob.id, gob.rc.floor(posres), 0, -1}
         ui.gui.map.wdgmsg("click", ui.mc.max(Coord.z), gob.rc.floor(posres), button, mod, olid != 0 ? 1 : 0, (int) gob.id, gob.rc.floor(posres), olid, meshId);
@@ -251,13 +254,15 @@ public class PBotGob {
 
         if (d instanceof Composite) {
             Composite comp = (Composite) d;
-            for (ResData rd : comp.prevposes) {
-                try {
-                    ret.add(rd.res.get().name);
-                } catch (Loading l) {
+            Collection<ResData> poses = comp.prevposes;
+            if (poses != null)
+                for (ResData rd : poses) {
+                    try {
+                        ret.add(rd.res.get().name);
+                    } catch (Loading l) {
 
+                    }
                 }
-            }
         }
         return ret;
     }
