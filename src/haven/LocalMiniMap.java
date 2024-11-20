@@ -659,6 +659,41 @@ public class LocalMiniMap extends Widget {
                         }
                     }
                     enemy = true;
+                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmwhite"), "None") && buddy != null && buddy.group() == 0) {
+                    sgobs.add(gob.id);
+                    Double vol = Config.alarmvollist.get("alarmwhite");
+                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                    else Audio.play(Resource.local().load(item), vol);
+                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmgreen"), "None") && buddy != null && buddy.group() == 1) {
+                    sgobs.add(gob.id);
+                    Double vol = Config.alarmvollist.get("alarmgreen");
+                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                    else Audio.play(Resource.local().load(item), vol);
+                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmblue"), "None") && buddy != null && buddy.group() == 3) {
+                    sgobs.add(gob.id);
+                    Double vol = Config.alarmvollist.get("alarmblue");
+                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                    else Audio.play(Resource.local().load(item), vol);
+                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmcyan"), "None") && buddy != null && buddy.group() == 4) {
+                    sgobs.add(gob.id);
+                    Double vol = Config.alarmvollist.get("alarmcyan");
+                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                    else Audio.play(Resource.local().load(item), vol);
+                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmyellow"), "None") && buddy != null && buddy.group() == 5) {
+                    sgobs.add(gob.id);
+                    Double vol = Config.alarmvollist.get("alarmyellow");
+                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                    else Audio.play(Resource.local().load(item), vol);
+                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmpink"), "None") && buddy != null && buddy.group() == 6) {
+                    sgobs.add(gob.id);
+                    Double vol = Config.alarmvollist.get("alarmpink");
+                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                    else Audio.play(Resource.local().load(item), vol);
+                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmpurple"), "None") && buddy != null && buddy.group() == 7) {
+                    sgobs.add(gob.id);
+                    Double vol = Config.alarmvollist.get("alarmpurple");
+                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                    else Audio.play(Resource.local().load(item), vol);
                 } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmred"), "None") && buddy != null && buddy.group() == 2) {
                     sgobs.add(gob.id);
                     Double vol = Config.alarmvollist.get("alarmred");

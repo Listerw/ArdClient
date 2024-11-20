@@ -708,7 +708,14 @@ public class OptWnd extends Window {
         });
         appender.setVerticalMargin(0);
         appender.addRow(new Label("Unknown Player Alarm"), customAlarmWnd("alarmunknown"));
+        appender.addRow(new Label("White Player Alarm"), customAlarmWnd("alarmwhite"));
+        appender.addRow(new Label("Green Player Alarm"), customAlarmWnd("alarmgreen"));
         appender.addRow(new Label("Red Player Alarm"), customAlarmWnd("alarmred"));
+        appender.addRow(new Label("Blue Player Alarm"), customAlarmWnd("alarmblue"));
+        appender.addRow(new Label("Cyan Player Alarm"), customAlarmWnd("alarmcyan"));
+        appender.addRow(new Label("Yellow Player Alarm"), customAlarmWnd("alarmyellow"));
+        appender.addRow(new Label("Pink Player Alarm"), customAlarmWnd("alarmpink"));
+        appender.addRow(new Label("Purple Player Alarm"), customAlarmWnd("alarmpurple"));
         appender.addRow(new CheckBox("Cleave sound", val -> Utils.setprefb("cleavesound", Config.cleavesound = val), Config.cleavesound), customAlarmWnd("alarmcleave"));
         appender.add(new CheckBox("Alarm on new private/party chat") {
             {
