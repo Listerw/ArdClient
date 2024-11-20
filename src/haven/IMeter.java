@@ -26,6 +26,8 @@
 
 package haven;
 
+import haven.purus.pbot.PBotGob;
+import haven.purus.pbot.PBotGobAPI;
 import haven.sloth.gui.MovableWidget;
 import modification.configuration;
 
@@ -73,9 +75,10 @@ public class IMeter extends MovableWidget {
     }
 
     protected float scale = Utils.getpreff("scale-" + this.key, 1f);
+    protected int width = Utils.getprefi("width-" + this.key, 0);
 
     private IMeter(Indir<Resource> bg, List<Meter> meters, final String name) {
-        super(fsz.mul(Utils.getpreff("scale-" + name, 1f)), name);
+        super(fsz.add(configuration.minimalisticmeter ? Utils.getprefi("width-" + name, 0) : 0, 0).mul(Utils.getpreff("scale-" + name, 1f)), name);
         this.bg = bg;
         this.meters = meters;
     }
@@ -86,15 +89,18 @@ public class IMeter extends MovableWidget {
 
     public static class Meter {
         Color c;
+        Color ca;
         public int a;
 
         public Meter(Color c, int a) {
             this.c = c;
+            this.ca = new Color(c.getRed(), c.getGreen(), c.getBlue(), 128).darker();
             this.a = a;
         }
 
         public Meter(double a, Color c) {
             this.a = (int) (a * 100);
+            this.ca = new Color(c.getRed(), c.getGreen(), c.getBlue(), 128).darker();
             this.c = c;
         }
     }
@@ -105,7 +111,7 @@ public class IMeter extends MovableWidget {
 
     protected void drawBg(GOut g) {
         boolean mini = configuration.minimalisticmeter;
-        g.chcolor(0, 0, 0, 255);
+        g.chcolor(0, 0, 0, 128);
         if (!mini) {
             g.frect(off.mul(this.scale), msz.mul(this.scale));
         } else {
@@ -124,7 +130,7 @@ public class IMeter extends MovableWidget {
                 g.chcolor(m.c);
                 g.frect(off.mul(this.scale), Coord.of(w, msz.y).mul(this.scale));
             } else {
-                g.chcolor(m.c.darker());
+                g.chcolor(m.ca);
                 Coord off = miniOff.mul(this.scale);
                 g.frect(off, Coord.of((sz.x * m.a) / 100, sz.y).sub(off.mul(2)));
             }
@@ -238,6 +244,7 @@ public class IMeter extends MovableWidget {
                     if (matcher.find()) {
                         ui.sess.details.stam = Integer.parseInt(matcher.group(1));
                         meterinfo = ui.sess.details.stam + "%";
+                        isStamina = true;
                     } else {
                         matcher = energypat.matcher(tt);
                         if (matcher.find()) {
@@ -291,22 +298,66 @@ public class IMeter extends MovableWidget {
             if (lastscale != scale) {
                 Utils.setpreff("scale-" + this.key, this.scale = scale);
 
-                resize(fsz.mul(scale));
-                move(c.sub(sz.sub(fsz.mul(lastscale)).div(2)));
-                Text meterinfo = this.meterinfo;
-                if (meterinfo != null)
-                    this.meterinfo = Text.create(meterinfo.text, PUtils.strokeImg(fnd.render(meterinfo.text, -1, TextAttribute.SIZE, UI.scale(10) * scale)));
+                resize(fsz.add(width, 0).mul(scale));
+                move(c.sub(sz.sub(fsz.add(width, 0).mul(lastscale)).div(2)));
+                dirtyText = true;
+            }
+            return (true);
+        } else if (ui.modflags() == UI.MOD_CTRL) {
+            int width = Math.max(Math.min(this.width - (1 * amount), 200), 0);
+            int lastwidth = this.width;
+            if (lastwidth != width) {
+                Utils.setprefi("width-" + this.key, this.width = width);
+
+                Coord center = c.add(fsz.add(lastwidth, 0).mul(scale).div(2));
+                resize(fsz.add(width, 0).mul(scale));
+                move(center.sub(sz.div(2)));
+                dirtyText = true;
             }
             return (true);
         }
         return (super.mousewheel(c, amount));
     }
 
+    boolean isStamina = false;
+    boolean isDrink = false;
+    boolean dirtyText = false;
+    String drawText = null;
+    static final String drinkSuf = " (Drinking)";
+
+    @Override
+    public void tick(final double dt) {
+        String drawText = this.drawText;
+        if (drawText != null) {
+            if (isStamina) {
+                PBotGob player = PBotGobAPI.player(ui);
+                if (player.getPoses().stream().anyMatch(s -> s.contains("drink"))) {
+                    if (!isDrink) {
+                        isDrink = true;
+                        drawText = drawText.concat(drinkSuf);
+                        dirtyText = true;
+                    }
+                } else {
+                    if (isDrink) {
+                        isDrink = false;
+                        dirtyText = true;
+                    }
+                }
+            }
+
+            if (dirtyText) {
+                dirtyText = false;
+                this.meterinfo = Text.create(drawText, PUtils.strokeImg(fnd.render(drawText, -1, TextAttribute.SIZE, UI.scale(10) * this.scale)));
+            }
+        }
+    }
+
     protected void updatemeterinfo(String str) {
         if (str == null || str.isEmpty()) return;
-        Text meterinfo = this.meterinfo;
-        if (meterinfo == null || !meterinfo.text.equals(str)) {
-            this.meterinfo = Text.create(str, PUtils.strokeImg(fnd.render(str, -1, TextAttribute.SIZE, UI.scale(10) * this.scale)));
+        String drawText = this.drawText;
+        if (drawText == null || !drawText.equals(str)) {
+            this.drawText = str;
+            dirtyText = true;
         }
     }
 }
