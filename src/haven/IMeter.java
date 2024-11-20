@@ -334,7 +334,6 @@ public class IMeter extends MovableWidget {
                 if (player.getPoses().stream().anyMatch(s -> s.contains("drink"))) {
                     if (!isDrink) {
                         isDrink = true;
-                        drawText = drawText.concat(drinkSuf);
                         dirtyText = true;
                     }
                 } else {
@@ -347,6 +346,8 @@ public class IMeter extends MovableWidget {
 
             if (dirtyText) {
                 dirtyText = false;
+                if (isDrink)
+                    drawText = drawText.concat(drinkSuf);
                 this.meterinfo = Text.create(drawText, PUtils.strokeImg(fnd.render(drawText, -1, TextAttribute.SIZE, UI.scale(10) * this.scale)));
             }
         }
