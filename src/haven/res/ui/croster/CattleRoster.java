@@ -16,6 +16,7 @@ import haven.Resource;
 import haven.Scrollbar;
 import haven.Tex;
 import haven.UI;
+import haven.UID;
 import haven.Widget;
 import haven.Window;
 import java.util.ArrayList;
@@ -267,7 +268,7 @@ public abstract class CattleRoster<T extends Entry> extends Widget {
             delentry(entry.id);
             addentry(entry);
         } else if (msg == "rm") {
-            delentry((Long) args[0]);
+            delentry(((Number) args[0]).longValue());
         } else if (msg == "addto") {
             GameUI gui = (GameUI)ui.getwidget((Integer)args[0]);
             Pagina pag = gui.menu.paginafor(ui.sess.getres((Integer)args[1]));
