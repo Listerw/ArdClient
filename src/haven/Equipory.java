@@ -28,6 +28,7 @@ package haven;
 
 import haven.res.ui.tt.Armor;
 import haven.res.ui.tt.wpn.Damage;
+import modification.configuration;
 
 import java.awt.Color;
 import java.util.Arrays;
@@ -165,6 +166,9 @@ public class Equipory extends Widget implements DTarget {
             Coord c = ecoords[i].add(ecoords[i].x != rx ? invsq.sz().x : 0, invsq.sz().y / 2);
             quicks[i] = adda(new QuickSlot(i), c, ecoords[i].x != rx ? 0 : 1, 0.5);
             quicks[i].z(1);
+            if (!(Config.quickslots && configuration.newQuickSlotWdg)) {
+                quicks[i].hide();
+            }
         }
     }
 

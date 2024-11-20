@@ -2974,13 +2974,17 @@ public class OptWnd extends Window {
                 Set<GameUI> guis = ui.root.children(GameUI.class);
                 if (!guis.isEmpty()) {
                     GameUI gui = guis.iterator().next();
+                    Equipory e = gui.equipory;
                     Widget qs = configuration.newQuickSlotWdg ? gui.newquickslots : gui.quickslots;
 
                     if (qs != null) {
                         if (val) {
                             qs.show();
+                            if (configuration.newQuickSlotWdg)
+                                Arrays.stream(e.quicks).forEach(Widget::show);
                         } else {
                             qs.hide();
+                            Arrays.stream(e.quicks).forEach(Widget::hide);
                         }
                     }
                 }
@@ -2994,23 +2998,30 @@ public class OptWnd extends Window {
             public void set(boolean val) {
                 Utils.setprefb("newQuickSlotWdg", val);
                 configuration.newQuickSlotWdg = val;
+                boolean isShowed = Config.quickslots && val;
                 a = val;
 
                 try {
                     if (ui != null && ui.gui != null) {
+                        Equipory e = ui.gui.equipory;
                         Widget qs = ui.gui.quickslots;
                         Widget nqs = ui.gui.newquickslots;
 
                         if (qs != null && nqs != null) {
-                            if (val) {
+                            if (isShowed) {
                                 nqs.show();
                                 qs.hide();
+                                Arrays.stream(e.quicks).forEach(Widget::show);
                             } else {
                                 nqs.hide();
-                                qs.show();
+                                if (Config.quickslots)
+                                    qs.show();
+                                Arrays.stream(e.quicks).forEach(Widget::hide);
                             }
                         }
                     }
+
+
                 } catch (ClassCastException e) { // in case we are at the login screen
                 }
             }
