@@ -30,6 +30,7 @@ import haven.purus.pbot.PBotGob;
 import haven.purus.pbot.PBotGobAPI;
 import haven.sloth.gui.MovableWidget;
 import modification.configuration;
+import modification.dev;
 
 import java.awt.Color;
 import java.awt.font.TextAttribute;
@@ -330,17 +331,21 @@ public class IMeter extends MovableWidget {
         String drawText = this.drawText;
         if (drawText != null) {
             if (isStamina) {
-                PBotGob player = PBotGobAPI.player(ui);
-                if (player.getPoses().stream().anyMatch(s -> s.contains("drink"))) {
-                    if (!isDrink) {
-                        isDrink = true;
-                        dirtyText = true;
+                try {
+                    PBotGob player = PBotGobAPI.player(ui);
+                    if (player.gob != null && player.getPoses().stream().anyMatch(s -> s.contains("drink"))) {
+                        if (!isDrink) {
+                            isDrink = true;
+                            dirtyText = true;
+                        }
+                    } else {
+                        if (isDrink) {
+                            isDrink = false;
+                            dirtyText = true;
+                        }
                     }
-                } else {
-                    if (isDrink) {
-                        isDrink = false;
-                        dirtyText = true;
-                    }
+                } catch (Exception e) {
+                    dev.simpleLog(e);
                 }
             }
 
