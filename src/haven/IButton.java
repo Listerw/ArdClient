@@ -185,7 +185,7 @@ public class IButton extends SIWidget {
         return (Resource.remote().loadwait(str).layer(Resource.imgc).img);
     }
 
-    private static BufferedImage load(String str, int id) {
+    static BufferedImage load(String str, int id) {
         return (Resource.remote().loadwait(str).layer(Resource.imgc, id).img);
     }
 }

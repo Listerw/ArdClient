@@ -30,6 +30,7 @@ import haven.res.ui.tt.Armor;
 import haven.res.ui.tt.wpn.Damage;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -100,6 +101,7 @@ public class Equipory extends Widget implements DTarget {
     AttrBonusesWdg bonuses;
     public WItem[] quickslots = new WItem[ecoords.length];
     public WItem[] slots = new WItem[ecoords.length];
+    public QuickSlot[] quicks = new QuickSlot[ecoords.length];
 
     @RName("epry")
     public static class $_ implements Factory {
@@ -158,6 +160,48 @@ public class Equipory extends Widget implements DTarget {
         adda(plus, Coord.of(rx, 0), 1, 0);
         adda(minus, Coord.of(rx, 0), 1, 0);
         plus.hide();
+
+        for (int i = 0; i < ecoords.length; i++) {
+            Coord c = ecoords[i].add(ecoords[i].x != rx ? invsq.sz().x : 0, invsq.sz().y / 2);
+            quicks[i] = adda(new QuickSlot(i), c, ecoords[i].x != rx ? 0 : 1, 0.5);
+            quicks[i].z(1);
+        }
+    }
+
+    public static class QuickSlot extends IButton {
+        private static final List<Integer> defs = Arrays.asList(6, 7, 5, 14);
+        private final int slot;
+        private final String prefName;
+        private boolean state;
+
+        public QuickSlot(final int slot) {
+            super(Theme.fullres("buttons/circular/small/add"), null);
+            this.slot = slot;
+            this.prefName = "quickslot." + slot;
+            this.state = Utils.getprefb(prefName, defs.contains(slot));
+
+            if (state) {
+                String res = Theme.fullres("buttons/circular/small/sub");
+                this.up = load(res, 0);
+                this.down = load(res, 1);
+                this.hover = load(res, 2);
+            }
+
+            action(this::click);
+        }
+
+        public boolean state() {
+            return (state);
+        }
+
+        public void click() {
+            boolean state = this.state;
+            Utils.setprefb(prefName, this.state = !state);
+            String res = Theme.fullres("buttons/circular/small/" + (state ? "add" : "sub"));
+            this.up = load(res, 0);
+            this.down = load(res, 1);
+            this.hover = load(res, 2);
+        }
     }
 
     @Override

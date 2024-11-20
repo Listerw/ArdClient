@@ -2563,9 +2563,10 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
 
 
     public void rightHand() {
+        Equipory e = equipory;
         if (configuration.newQuickSlotWdg) {
-            newquickslots.drop(newQuickSlotsWdg.items[0].coord, Coord.z);
-            newquickslots.simulateclick(newQuickSlotsWdg.items[0].coord);
+            newquickslots.drop(7);
+            newquickslots.simulateclick(7);
         } else {
             quickslots.drop(QuickSlotsWdg.lc, Coord.z);
             quickslots.simulateclick(QuickSlotsWdg.lc);
@@ -2580,8 +2581,8 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
 
     public void leftHand() {
         if (configuration.newQuickSlotWdg) {
-            newquickslots.drop(newQuickSlotsWdg.items[1].coord, Coord.z);
-            newquickslots.simulateclick(newQuickSlotsWdg.items[1].coord);
+            newquickslots.drop(6);
+            newquickslots.simulateclick(6);
         } else {
             quickslots.drop(QuickSlotsWdg.rc, Coord.z);
             quickslots.simulateclick(QuickSlotsWdg.rc);
