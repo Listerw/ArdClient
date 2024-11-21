@@ -2878,6 +2878,18 @@ public class OptWnd extends Window {
         appender.add(new CheckBox("Show weather info (req. server time)", val -> Utils.setprefb("showweatherinfo", configuration.showweatherinfo = val), configuration.showweatherinfo));
         appender.add(new CheckBox("Show IMeter Text", val -> Utils.setprefb("showmetertext", Config.showmetertext = val), Config.showmetertext));
         appender.add(new CheckBox("Minimalistic Meters", val -> Utils.setprefb("minimalisticmeter", configuration.minimalisticmeter = val), configuration.minimalisticmeter));
+        appender.add(new CheckBox("Show drinking info", val -> Utils.setprefb("showdrinkinfo", configuration.showdrinkinfo = val), configuration.showdrinkinfo));
+        appender.addRow(new Label("IMeter transparency"), new HSlider(UI.scale(100), 0, 255, configuration.imetertransparency) {
+            public void changed() {
+                configuration.imetertransparency = val;
+                Utils.setprefi("imetertransparency", val);
+            }
+
+            @Override
+            public Object tooltip(Coord c0, Widget prev) {
+                return Text.render(val + "").tex();
+            }
+        });
         appender.add(new CheckBox("Show player id in Kith & Kin") {
             {
                 a = configuration.kinid;

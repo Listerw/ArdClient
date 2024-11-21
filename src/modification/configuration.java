@@ -326,6 +326,8 @@ public class configuration {
     public static boolean pointplacing = Utils.getprefb("pointplacing", false);
     public static boolean placinginfo = Utils.getprefb("placinginfo", false);
     public static boolean minimalisticmeter = Utils.getprefb("minimalisticmeter", false);
+    public static boolean showdrinkinfo = Utils.getprefb("showdrinkinfo", true);
+    public static int imetertransparency = Utils.getprefi("imetertransparency", 128);
     public static boolean boostspeedbox = Utils.getprefb("boostspeedbox", true);
     public static boolean showlinmove = Utils.getprefb("showlinmove", true);
     public static boolean simpledraging = Utils.getprefb("simpledraging", true);

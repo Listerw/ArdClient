@@ -90,18 +90,15 @@ public class IMeter extends MovableWidget {
 
     public static class Meter {
         Color c;
-        Color ca;
         public int a;
 
         public Meter(Color c, int a) {
             this.c = c;
-            this.ca = new Color(c.getRed(), c.getGreen(), c.getBlue(), 128).darker();
             this.a = a;
         }
 
         public Meter(double a, Color c) {
             this.a = (int) (a * 100);
-            this.ca = new Color(c.getRed(), c.getGreen(), c.getBlue(), 128).darker();
             this.c = c;
         }
     }
@@ -112,10 +109,12 @@ public class IMeter extends MovableWidget {
 
     protected void drawBg(GOut g) {
         boolean mini = configuration.minimalisticmeter;
-        g.chcolor(0, 0, 0, 128);
+
         if (!mini) {
+            g.chcolor(0, 0, 0, 255);
             g.frect(off.mul(this.scale), msz.mul(this.scale));
         } else {
+            g.chcolor(0, 0, 0, configuration.imetertransparency);
             Coord off = miniOff.mul(this.scale);
             g.frect(off, sz.sub(off.mul(2)));
         }
@@ -131,7 +130,7 @@ public class IMeter extends MovableWidget {
                 g.chcolor(m.c);
                 g.frect(off.mul(this.scale), Coord.of(w, msz.y).mul(this.scale));
             } else {
-                g.chcolor(m.ca);
+                g.chcolor(new Color(m.c.getRed(), m.c.getGreen(), m.c.getBlue(), configuration.imetertransparency).darker());
                 Coord off = miniOff.mul(this.scale);
                 g.frect(off, Coord.of((sz.x * m.a) / 100, sz.y).sub(off.mul(2)));
             }
@@ -331,21 +330,26 @@ public class IMeter extends MovableWidget {
         String drawText = this.drawText;
         if (drawText != null) {
             if (isStamina) {
-                try {
-                    PBotGob player = PBotGobAPI.player(ui);
-                    if (player.gob != null && player.getPoses().stream().anyMatch(s -> s.contains("drink"))) {
-                        if (!isDrink) {
-                            isDrink = true;
-                            dirtyText = true;
+                if (configuration.showdrinkinfo) {
+                    try {
+                        PBotGob player = PBotGobAPI.player(ui);
+                        if (player.gob != null && player.getPoses().stream().anyMatch(s -> s.contains("drink"))) {
+                            if (!isDrink) {
+                                isDrink = true;
+                                dirtyText = true;
+                            }
+                        } else {
+                            if (isDrink) {
+                                isDrink = false;
+                                dirtyText = true;
+                            }
                         }
-                    } else {
-                        if (isDrink) {
-                            isDrink = false;
-                            dirtyText = true;
-                        }
+                    } catch (Exception e) {
+                        dev.simpleLog(e);
                     }
-                } catch (Exception e) {
-                    dev.simpleLog(e);
+                } else if (isDrink) {
+                    isDrink = false;
+                    dirtyText = true;
                 }
             }
 
