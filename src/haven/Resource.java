@@ -2332,7 +2332,7 @@ public class Resource implements Serializable {
         return (o.name.equals(this.name) && (o.ver == this.ver));
     }
 
-    private static final List<String> depresList = Arrays.asList("gfx/hud/rosters/.*", "gfx/terobjs/cupboard", "gfx/terobjs/crate", "ui/inspect", "ui/croster", "lib/icave", "gfx/terobjs/", "gfx/terobjs/consobj.*", "ui/obj/buddy.*", "gfx/terobjs/peacebreaker.*", "lib/vmat", "gfx/terobjs/arch/upstairs", "lib/svaj", "gfx/terobjs/items/huntersquiver");
+    private static final List<String> depresList = Arrays.asList("gfx/hud/rosters/.*", "gfx/terobjs/cupboard", "gfx/terobjs/crate", "ui/inspect", "ui/croster", "lib/icave", "gfx/terobjs/", "gfx/terobjs/consobj.*", "ui/obj/buddy.*", "gfx/terobjs/peacebreaker.*", "lib/vmat", "gfx/terobjs/arch/upstairs", "lib/svaj", "gfx/terobjs/items/huntersquiver", "gfx/terobjs/items/huntersquiver-pounch", "gfx/terobjs/items/huntersbow", "gfx/terobjs/items/creel", "gfx/terobjs/items/leatherpurse", "gfx/terobjs/items/silkpurse", "gfx/terobjs/items/glassjug");
 
     private Object[] load(InputStream st) throws IOException {
         LoadException exception = null;
