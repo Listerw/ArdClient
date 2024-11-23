@@ -38,46 +38,50 @@ public class GobCombatSprite extends Sprite {
             if (gob.sc == null) {
                 return;
             }
+            float scale = 0.8f;
 //            final Coord c = new Coord(sc.add(sczu.mul(16))).sub(0, UI.scale(40));
-            final Coord c = gob.sc.add(new Coord(gob.sczu.mul(15))).add(0, UI.scale(10));
+            final Coord c1 = gob.sc.add(new Coord(gob.sczu.mul(15))).sub(0, UI.scale(25));
+            final Coord c = c1.sub(0, UI.scale(25)).sub(0, Buff.scframe.sz().y * scale);
             final Coord bc = c.copy();
             final Coord sc = c.copy();
-            float scale = 0.8f;
 
             //Draw Buffs
             int count = 0;
             for (Widget wdg = rel.buffs.child; wdg != null; wdg = wdg.next) {
                 if (!(wdg instanceof Buff))
                     continue;
-                final Buff buf = (Buff) wdg;
-                Double ameter = (buf.ameter >= 0) ? Double.valueOf(buf.ameter / 100.0) : buf.ameteri.get();
-                if (ameter != null && buf.isOpening()) {
-                    count++;
-                }
+                //final Buff buf = (Buff) wdg;
+                //Double ameter = (buf.ameter >= 0) ? Double.valueOf(buf.ameter / 100.0) : buf.ameteri.get();
+                //if (ameter != null && buf.isOpening()) {
+                count++;
+                //}
             }
             bc.x -= (int) (((Buff.scframe.sz().x * scale) + 2) * count / 2);
             for (Widget wdg = rel.buffs.child; wdg != null; wdg = wdg.next) {
                 if (!(wdg instanceof Buff))
                     continue;
                 final Buff buf = (Buff) wdg;
-                Double ameter = (buf.ameter >= 0) ? Double.valueOf(buf.ameter / 100.0) : buf.ameteri.get();
-                if (ameter != null && buf.isOpening()) {
-                    buf.fightdraw(g.reclip(bc.copy(), Buff.scframe.sz()), scale);
-                    bc.x += (int) (Buff.scframe.sz().x * scale) + 2;
+                //Double ameter = (buf.ameter >= 0) ? Double.valueOf(buf.ameter / 100.0) : buf.ameteri.get();
+                if (/*ameter != null && */buf.isOpening()) {
+                    buf.fightdraw(g.reclip(bc.copy(), Buff.scframe.sz().mul(scale)), scale);
+                } else {
+                    buf.stancedraw(g.reclip(bc.copy(), Buff.scframe.sz().mul(scale)), scale);
                 }
+                bc.x += (int) (Buff.scframe.sz().x * scale) + 2;
             }
 
-            for (Widget wdg = rel.buffs.child; wdg != null; wdg = wdg.next) {
+            /*for (Widget wdg = rel.buffs.child; wdg != null; wdg = wdg.next) {
                 if (!(wdg instanceof Buff))
                     continue;
                 final Buff buf = (Buff) wdg;
                 if (!buf.isOpening()) {
                     buf.stancedraw(g.reclip(sc.copy().add(-(int) (Buff.scframe.sz().x * scale / 2.0), (int) (Buff.scframe.sz().y * scale)), Buff.scframe.sz()), scale);
                 }
-            }
+            }*/
 
             if (rel.lastact != null) {
-                Coord lc = c.add(0, Buff.scframe.sz().y * 3);
+                Coord lc = c.sub(0, Buff.scframe.sz().y * scale);
+
                 double max = 10;
                 try {
                     Resource lastres = rel.lastact.get();
@@ -115,7 +119,7 @@ public class GobCombatSprite extends Sprite {
                 }
             }
             Tex render = texMap.computeIfAbsent(String.format("$bg[35,35,35,192]{$size[14]{$b{$col[0,255,0]{%d} : $col[255,0,0]{%d}}}}", rel.ip, rel.oip), t -> RichText.render(t, -1).tex());
-            g.aimage(render, c, 0.5, 1);
+            g.aimage(render, c1, 0.5, 1.01);
             g.chcolor();
         }
     }

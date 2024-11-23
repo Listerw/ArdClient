@@ -180,12 +180,13 @@ public class Buff extends Widget implements ItemInfo.ResOwner, Bufflist.Managed 
 
                 if (ameter != null) {
                     final int a = (int) (ameter * 100);
-                    final Coord size = FastText.size(a + "");
+                    //final Coord size = FastText.size(a + "");
                     final Coord c = sz.mul(scale).div(2);
-                    g.chcolor(new Color(64, 64, 64, 215));
-                    g.frect(c.sub(size.div(2)), size.sub(0, 1));
-                    g.chcolor();
-                    FastText.aprintf(g, c, 0.5, 0.5, "%d", a);
+                    //g.chcolor(new Color(64, 64, 64, 215));
+                    //g.frect(c.sub(size.div(2)), size.sub(0, 1));
+                    //g.chcolor();
+                    g.aimage(ametertex(a + ""), c, 0.5, 0.5);
+                    //FastText.aprintf(g, c, 0.5, 0.5, "%d", a);
                 }
             }
         } catch (Loading l) {
@@ -209,12 +210,14 @@ public class Buff extends Widget implements ItemInfo.ResOwner, Bufflist.Managed 
                 g.chcolor();
                 Double ameter = (this.ameter >= 0) ? Double.valueOf(this.ameter / 100.0) : this.ameteri.get();
                 if (ameter != null) {
-                    final Coord size = FastText.size((int) (ameter * 100) + "");
+                    final int a = (int) (ameter * 100);
+                    //final Coord size = FastText.size(a + "");
                     final Coord c = sz.mul(scale).div(2);
-                    g.chcolor(new Color(64, 64, 64, 215));
-                    g.frect(c.sub(size.div(2)), size.sub(0, 1));
-                    g.chcolor();
-                    FastText.aprintf(g, c, 0.5, 0.5, "%d", this.ameter);
+                    //g.chcolor(new Color(64, 64, 64, 215));
+                    //g.frect(c.sub(size.div(2)), size.sub(0, 1));
+                    //g.chcolor();
+                    g.aimage(ametertex(a + ""), c, 0.5, 0.5);
+                    //FastText.aprintf(g, c, 0.5, 0.5, "%d", a);
                 }
             }
         } catch (Loading l) {
@@ -224,6 +227,19 @@ public class Buff extends Widget implements ItemInfo.ResOwner, Bufflist.Managed 
 
     public void stancedraw(final GOut g) {
         stancedraw(g, 1.0f);
+    }
+
+    Text ametertex = null;
+    private Tex ametertex(String text) {
+        Tex ret = null;
+        if (ametertex == null || !ametertex.text.equals(text)) {
+            BufferedImage img = Text.render(String.format("%s", text), new Color(200, 200, 200)).img;
+            ret = new TexI(PUtils.rasterimg(PUtils.blurmask2(img.getRaster(), 1, 1, Color.BLACK)));
+            ametertex = new Text(text, new TexI(PUtils.rasterimg(PUtils.blurmask2(img.getRaster(), 1, 1, Color.BLACK))).back);
+        } else {
+            ret = ametertex.tex();
+        }
+        return (ret);
     }
 
     public void sessdraw(final GOut g, Coord bc) {
