@@ -243,6 +243,55 @@ Window extends MovableWidget implements DTarget {
             lbtn.up = on;
             lbtn.hover = off;
         }
+        if (this.cap.text.equals(Resource.getLocString(Resource.BUNDLE_WINDOW, "Table"))) {
+            adda(new Button(UI.scale(60), "Eat All") {
+                public void click() {
+                    Resource curs = ui.root.getcurs(c);
+                    if (curs.name.equals("gfx/hud/curs/eat")) {
+                        Map idk = getStats();
+                        synchronized (ui.root.lchild) {
+                            try {
+                                for (Widget q = ui.root.lchild; q != null; q = q.rnext()) {
+                                    if (q instanceof Inventory) {
+                                        if (q.parent instanceof Window)
+                                            if (!((Window) q.parent).cap.text.equals("Study")) {
+                                                List<WItem> foods = getfoods((Inventory) q);
+                                                for (WItem item : foods) {
+                                                    if (!item.item.getname().contains("Corn")) {
+                                                        GItem food = item.item;
+                                                        food.wdgmsg("iact", Coord.z, -1);
+                                                    }
+                                                }
+                                            }
+                                    }
+                                }
+
+                            } catch (Exception q) {
+                            }
+                        }
+                        PBotUtils.sleep(1000);
+                        Map idk2 = getStats();
+                        idk2.forEach((k, v) -> {
+                            if ((Integer) idk2.get(k) - (Integer) idk.get(k) > 0) {
+                                // System.out.println("Bulk Stats gained : " + k + " value : " + ((Integer) idk2.get(k) - (Integer) idk.get(k)));
+                                PBotUtils.sysLogAppend(ui, "Bulk Stats gained : " + k + " value : " + ((Integer) idk2.get(k) - (Integer) idk.get(k)), "green");
+                            }
+                            // else
+                            // System.out.println("Old : "+idk.get(k)+" new : "+v);
+                        });
+                    } else {
+                        ui.gui.msg("Click Feast First!", Color.white);
+                    }
+
+                }
+
+                @Override
+                public void presize() {
+                    super.presize();
+                    move(asz.sub(0, UI.scale(25)), 1, 1);
+                }
+            }, asz.sub(0, UI.scale(25)), 1, 1);
+        }
     }
 
     public void makeHidable() {
@@ -463,47 +512,6 @@ Window extends MovableWidget implements DTarget {
 
         try {
             if (this.cap.text.equals(Resource.getLocString(Resource.BUNDLE_WINDOW, "Table"))) {
-                add(new Button(UI.scale(60), "Eat All") {
-                    public void click() {
-                        Resource curs = ui.root.getcurs(c);
-                        if (curs.name.equals("gfx/hud/curs/eat")) {
-                            Map idk = getStats();
-                            synchronized (ui.root.lchild) {
-                                try {
-                                    for (Widget q = ui.root.lchild; q != null; q = q.rnext()) {
-                                        if (q instanceof Inventory) {
-                                            if (q.parent instanceof Window)
-                                                if (!((Window) q.parent).cap.text.equals("Study")) {
-                                                    List<WItem> foods = getfoods((Inventory) q);
-                                                    for (WItem item : foods) {
-                                                        if (!item.item.getname().contains("Corn")) {
-                                                            GItem food = item.item;
-                                                            food.wdgmsg("iact", Coord.z, -1);
-                                                        }
-                                                    }
-                                                }
-                                        }
-                                    }
-
-                                } catch (Exception q) {
-                                }
-                            }
-                            PBotUtils.sleep(1000);
-                            Map idk2 = getStats();
-                            idk2.forEach((k, v) -> {
-                                if ((Integer) idk2.get(k) - (Integer) idk.get(k) > 0) {
-                                    // System.out.println("Bulk Stats gained : " + k + " value : " + ((Integer) idk2.get(k) - (Integer) idk.get(k)));
-                                    PBotUtils.sysLogAppend(ui, "Bulk Stats gained : " + k + " value : " + ((Integer) idk2.get(k) - (Integer) idk.get(k)), "green");
-                                }
-                                // else
-                                // System.out.println("Old : "+idk.get(k)+" new : "+v);
-                            });
-                        } else {
-                            ui.gui.msg("Click Feast First!", Color.white);
-                        }
-
-                    }
-                }, UI.scale(140, 325));
                 if (Config.savecutlery) {
                     for (Widget w = this.lchild; w != null; w = w.prev) {
                         if (w instanceof Inventory) {
