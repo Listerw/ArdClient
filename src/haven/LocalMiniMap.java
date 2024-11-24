@@ -30,11 +30,13 @@ import haven.purus.Iconfinder;
 import haven.purus.pbot.PBotDiscord;
 import haven.purus.pbot.PBotUtils;
 import haven.res.ui.obj.buddy.Buddy;
+import haven.res.ui.obj.buddy_v.Vilmate;
 import haven.resutil.Ridges;
 import haven.sloth.gob.Alerted;
 import haven.sloth.gob.Type;
 import haven.sloth.gui.DowseWnd;
 import modification.configuration;
+import modification.dev;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -632,95 +634,94 @@ public class LocalMiniMap extends Widget {
                 if (ui.sess.glob.party.memb.containsKey(gob.id))
                     continue;
 
-                Buddy buddy = gob.getattr(Buddy.class);
-
                 if (sgobs.contains(gob.id))
                     continue;
 
-                boolean enemy = false;
-                String item = "None";
-                if (!Utils.eq(item = Config.alarmsfxlist.get("alarmunknown"), "None") && buddy == null) {
-                    sgobs.add(gob.id);
-                    Double vol = Config.alarmvollist.get("alarmunknown");
-                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
-                    else Audio.play(Resource.local().load(item), vol);
-                    if (Config.discordplayeralert) {
-                        if (!configuration.endpoint.isEmpty() && ui.sess != null && ui.sess.alive() && ui.sess.username != null && ui.gui != null) {
-                            if (!ui.gui.chrid.isEmpty()) {
-                                String username = ui.sess.username + "/" + ui.gui.chrid;
-                                if (Config.discorduser) {
-                                    PBotDiscord.mapAlert(username, Config.discordalertstring, "Player");
-                                } else if (Config.discordrole) {
-                                    PBotDiscord.mapAlertRole(username, Config.discordalertstring, "Player");
-                                } else {
-                                    PBotDiscord.mapAlertEveryone(username, "Player");
+                sgobs.add(gob.id);
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(250);
+                        Buddy buddy = gob.getattr(Buddy.class);
+                        Vilmate vbuddy = gob.getattr(Vilmate.class);
+                        boolean enemy = false;
+                        String item = "None";
+                        if (!Utils.eq(item = Config.alarmsfxlist.get("alarmunknown"), "None") && buddy == null && vbuddy != null) {
+                            Double vol = Config.alarmvollist.get("alarmunknown");
+                            if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                            else Audio.play(Resource.local().load(item), vol);
+                            if (Config.discordplayeralert) {
+                                if (!configuration.endpoint.isEmpty() && ui.sess != null && ui.sess.alive() && ui.sess.username != null && ui.gui != null) {
+                                    if (!ui.gui.chrid.isEmpty()) {
+                                        String username = ui.sess.username + "/" + ui.gui.chrid;
+                                        if (Config.discorduser) {
+                                            PBotDiscord.mapAlert(username, Config.discordalertstring, "Player");
+                                        } else if (Config.discordrole) {
+                                            PBotDiscord.mapAlertRole(username, Config.discordalertstring, "Player");
+                                        } else {
+                                            PBotDiscord.mapAlertEveryone(username, "Player");
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
-                    enemy = true;
-                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmwhite"), "None") && buddy != null && buddy.group() == 0) {
-                    sgobs.add(gob.id);
-                    Double vol = Config.alarmvollist.get("alarmwhite");
-                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
-                    else Audio.play(Resource.local().load(item), vol);
-                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmgreen"), "None") && buddy != null && buddy.group() == 1) {
-                    sgobs.add(gob.id);
-                    Double vol = Config.alarmvollist.get("alarmgreen");
-                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
-                    else Audio.play(Resource.local().load(item), vol);
-                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmblue"), "None") && buddy != null && buddy.group() == 3) {
-                    sgobs.add(gob.id);
-                    Double vol = Config.alarmvollist.get("alarmblue");
-                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
-                    else Audio.play(Resource.local().load(item), vol);
-                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmcyan"), "None") && buddy != null && buddy.group() == 4) {
-                    sgobs.add(gob.id);
-                    Double vol = Config.alarmvollist.get("alarmcyan");
-                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
-                    else Audio.play(Resource.local().load(item), vol);
-                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmyellow"), "None") && buddy != null && buddy.group() == 5) {
-                    sgobs.add(gob.id);
-                    Double vol = Config.alarmvollist.get("alarmyellow");
-                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
-                    else Audio.play(Resource.local().load(item), vol);
-                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmpink"), "None") && buddy != null && buddy.group() == 6) {
-                    sgobs.add(gob.id);
-                    Double vol = Config.alarmvollist.get("alarmpink");
-                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
-                    else Audio.play(Resource.local().load(item), vol);
-                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmpurple"), "None") && buddy != null && buddy.group() == 7) {
-                    sgobs.add(gob.id);
-                    Double vol = Config.alarmvollist.get("alarmpurple");
-                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
-                    else Audio.play(Resource.local().load(item), vol);
-                } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmred"), "None") && buddy != null && buddy.group() == 2) {
-                    sgobs.add(gob.id);
-                    Double vol = Config.alarmvollist.get("alarmred");
-                    if (Alerted.customsort.get(item)) Audio.play(item, vol);
-                    else Audio.play(Resource.local().load(item), vol);
-                    if (Config.discordplayeralert) {
-                        if (!configuration.endpoint.isEmpty() && ui.sess != null && ui.sess.alive() && ui.sess.username != null && ui.gui != null) {
-                            if (!ui.gui.chrid.isEmpty()) {
-                                String username = ui.sess.username + "/" + ui.gui.chrid;
-                                if (Config.discorduser) {
-                                    PBotDiscord.mapAlert(username, Config.discordalertstring, "Player");
-                                } else if (Config.discordrole) {
-                                    PBotDiscord.mapAlertRole(username, Config.discordalertstring, "Player");
-                                } else {
-                                    PBotDiscord.mapAlertEveryone(username, "Player");
+                            enemy = true;
+                        } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmwhite"), "None") && buddy != null && buddy.group() == 0) {
+                            Double vol = Config.alarmvollist.get("alarmwhite");
+                            if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                            else Audio.play(Resource.local().load(item), vol);
+                        } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmgreen"), "None") && buddy != null && buddy.group() == 1) {
+                            Double vol = Config.alarmvollist.get("alarmgreen");
+                            if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                            else Audio.play(Resource.local().load(item), vol);
+                        } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmblue"), "None") && buddy != null && buddy.group() == 3) {
+                            Double vol = Config.alarmvollist.get("alarmblue");
+                            if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                            else Audio.play(Resource.local().load(item), vol);
+                        } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmcyan"), "None") && buddy != null && buddy.group() == 4) {
+                            Double vol = Config.alarmvollist.get("alarmcyan");
+                            if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                            else Audio.play(Resource.local().load(item), vol);
+                        } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmyellow"), "None") && buddy != null && buddy.group() == 5) {
+                            Double vol = Config.alarmvollist.get("alarmyellow");
+                            if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                            else Audio.play(Resource.local().load(item), vol);
+                        } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmpink"), "None") && buddy != null && buddy.group() == 6) {
+                            Double vol = Config.alarmvollist.get("alarmpink");
+                            if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                            else Audio.play(Resource.local().load(item), vol);
+                        } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmpurple"), "None") && buddy != null && buddy.group() == 7) {
+                            Double vol = Config.alarmvollist.get("alarmpurple");
+                            if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                            else Audio.play(Resource.local().load(item), vol);
+                        } else if (!Utils.eq(item = Config.alarmsfxlist.get("alarmred"), "None") && buddy != null && buddy.group() == 2) {
+                            Double vol = Config.alarmvollist.get("alarmred");
+                            if (Alerted.customsort.get(item)) Audio.play(item, vol);
+                            else Audio.play(Resource.local().load(item), vol);
+                            if (Config.discordplayeralert) {
+                                if (!configuration.endpoint.isEmpty() && ui.sess != null && ui.sess.alive() && ui.sess.username != null && ui.gui != null) {
+                                    if (!ui.gui.chrid.isEmpty()) {
+                                        String username = ui.sess.username + "/" + ui.gui.chrid;
+                                        if (Config.discorduser) {
+                                            PBotDiscord.mapAlert(username, Config.discordalertstring, "Player");
+                                        } else if (Config.discordrole) {
+                                            PBotDiscord.mapAlertRole(username, Config.discordalertstring, "Player");
+                                        } else {
+                                            PBotDiscord.mapAlertEveryone(username, "Player");
+                                        }
+                                    }
                                 }
                             }
+                            enemy = true;
                         }
-                    }
-                    enemy = true;
-                }
 
-                if (Config.autologout && enemy) {
-                    PBotUtils.sysMsg(ui, "Ememy spotted! Logging out!", Color.white);
-                    ui.gui.act("lo");
-                } else if (Config.autohearth && enemy)
-                    ui.gui.act("travel", "hearth");
+                        if (Config.autologout && enemy) {
+                            PBotUtils.sysMsg(ui, "Ememy spotted! Logging out!", Color.white);
+                            ui.gui.act("lo");
+                        } else if (Config.autohearth && enemy)
+                            ui.gui.act("travel", "hearth");
+                    } catch (Exception e) {
+                        dev.simpleLog(e);
+                    }
+                }).start();
             }
         }
     }
