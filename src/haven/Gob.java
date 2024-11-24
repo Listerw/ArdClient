@@ -1585,6 +1585,7 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
     public Matrix4f scaleMatrix;
     private gobText barreltext;
     private gobText treetext;
+    private gobText signtext;
 
 //    private static final Map<Object, WeakReference<SavedMatches>> matchesMap = Collections.synchronizedMap(new HashMap<>());
     private final AtomicReference<SavedMatches> matches = new AtomicReference<>();
@@ -1659,6 +1660,7 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
             }
             List<Overlay> ols = new ArrayList<>(this.ols);
             String barrelText = null;
+            String signText = null;
             boolean barrelRet = true;
             for (Overlay ol : ols) {
                 String olname = ol.name();
@@ -1691,6 +1693,33 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
             } else {
                 if (barreltext != null) barreltext = null;
             }
+            if (Config.showsigntext && matches(matches, this::name,"gfx/terobjs/iconsign")) {
+                if (signText == null) {
+                    try {
+                        ResDrawable resdraw = getattr(ResDrawable.class);
+                        MessageBuf sdt = resdraw.sdt.clone();
+
+                        int resid = sdt.uint16();
+                        Message isdt = Message.nil;
+                        if((resid & 0x8000) != 0) {
+                            resid &= ~0x8000;
+                            isdt = new MessageBuf(sdt.bytes(sdt.uint8()));
+                        }
+                        Resource ires = this.context(Resource.Resolver.class).getres(resid).get();//meat???
+                        signText = ires.basename();
+                    } catch (Exception e) {
+                    }
+                }
+                if (signText != null) {
+                    if (signtext == null) signtext = new gobText(this, signText, Color.GREEN, 50);
+                    else signtext.update(signText);
+                    rl.add(signtext, null);
+                } else {
+                    if (signtext != null) signtext = null;
+                }
+            } else {
+                if (signtext != null) signtext = null;
+            }
             if (Config.showbarrelstatus && matches(matches, this::name,"gfx/terobjs/barrel")) {
                 if (barrelRet) rl.prepc(barrelemptycolormaterial.get());
             }
@@ -1707,6 +1736,7 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
                 }
             }
             if ((!Config.showbarreltext || ols.isEmpty()) && barreltext != null) barreltext = null;
+            if ((!Config.showsigntext || ols.isEmpty()) && signtext != null) signtext = null;
 
 
             Collection<GAttrib> attr = new ArrayList<>(this.attr.values());
