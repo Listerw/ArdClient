@@ -645,7 +645,7 @@ public class LocalMiniMap extends Widget {
                         Vilmate vbuddy = gob.getattr(Vilmate.class);
                         boolean enemy = false;
                         String item = "None";
-                        if (!Utils.eq(item = Config.alarmsfxlist.get("alarmunknown"), "None") && buddy == null && vbuddy != null) {
+                        if (!Utils.eq(item = Config.alarmsfxlist.get("alarmunknown"), "None") && buddy == null && vbuddy == null) {
                             Double vol = Config.alarmvollist.get("alarmunknown");
                             if (Alerted.customsort.get(item)) Audio.play(item, vol);
                             else Audio.play(Resource.local().load(item), vol);
