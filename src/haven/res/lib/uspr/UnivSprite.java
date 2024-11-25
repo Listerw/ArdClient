@@ -158,8 +158,14 @@ public class UnivSprite extends Sprite implements Gob.Overlay.CUpd, Skeleton.Has
     private void chmanims(int mask) {
         Collection<MeshAnim.Anim> anims = new LinkedList<MeshAnim.Anim>();
         for (MeshAnim.Res ar : res.layers(MeshAnim.Res.class)) {
-            if ((ar.id < 0) || (((1 << ar.id) & mask) != 0))
-                anims.add(ar.make());
+            try {
+                if ((ar.id < 0) || (((1 << ar.id) & mask) != 0))
+                    anims.add(ar.make());
+            } catch (Loading e) {
+                throw (e);
+            } catch (Throwable e) {
+                dev.simpleLog(e);
+            }
         }
         this.manims = anims.toArray(new MeshAnim.Anim[0]);
         this.mmorph = MorphedMesh.combine(this.manims);
