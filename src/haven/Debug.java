@@ -37,8 +37,8 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class Debug {
     public static final int FRAME_DEBUG_KEY = java.awt.event.KeyEvent.VK_PAUSE;
@@ -46,7 +46,8 @@ public class Debug {
     public static boolean pk1, pk2, pk3, pk4;
     public static boolean fdk, pfdk, ff;
     public static PrintWriter log = new PrintWriter(System.err);
-    private static Set<PrintWriter> logs = new HashSet<>();
+    private static Set<PrintWriter> logs = new CopyOnWriteArraySet<>();
+
     static {
         logs.add(log);
     }

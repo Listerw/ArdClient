@@ -465,7 +465,7 @@ public class Glob {
                 double ym = (n < a.length) ? ((Number) a[n++]).doubleValue() : 0.5;//current month in year [0, max month]
                 double md = (n < a.length) ? ((Number) a[n++]).doubleValue() : 0.5;//current day in month [0, max days]
                 ast = new Astronomy(dt, mp, yt, night, mc, is, sp, sd, years, ym, md);
-                dev.simpleLog(String.format("Glob Astronomy: day:%s moon:%s year:%s night:%s mc:%s season:%s sp:%s sd:%s years:%s ym:%s md:%s", dt, mp, yt, night, mc, is, sp, sd, years, ym, md));
+                //dev.simpleLog(String.format("Glob Astronomy: day:%s moon:%s year:%s night:%s mc:%s season:%s sp:%s sd:%s years:%s ym:%s md:%s", dt, mp, yt, night, mc, is, sp, sd, years, ym, md));
                 //Glob Astronomy: day:0.21407407522201538 moon:0.9404691457748413 year:0.8234115242958069 night:true mc:java.awt.Color[r=175,g=225,b=250] season:2 sp:0.4404691457748413 sd:0.9654287695884705 years:7.823411464691162 ym:4.940469264984131 md:28.214073181152344
                 //Glob Astronomy: day:0.700960636138916 moon:0.023365354165434837 year:0.8372275829315186 night:false mc:java.awt.Color[r=175,g=225,b=250] season:2 sp:0.5233653783798218 sd:0.9946214556694031 years:7.8372273445129395 ym:5.023365497589111 md:0.700960636138916
                 //Glob Astronomy: day:0.38636574149131775 moon:0.14621219038963318 year:0.8577020168304443 night:false mc:java.awt.Color[r=175,g=225,b=250] season:2 sp:0.6462122201919556 sd:0.8034355640411377 years:7.857702255249023 ym:5.146212100982666 md:4.38636589050293

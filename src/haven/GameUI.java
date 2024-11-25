@@ -477,8 +477,6 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
             public void flush() {
             }
         });
-//        Debug.log = ui.cons.out;
-        Debug.add(ui.cons.out);
         buffs = add(new Bufflist(), new Coord(95, 85));
         quickslots = new QuickSlotsWdg();
         newquickslots = new modification.newQuickSlotsWdg();
@@ -521,6 +519,8 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
             chatwnd.hide();
         syslog = chat.add(new ChatUI.Log("System"));
         debuglog = chat.add(new ChatUI.DebugChat());
+        //Debug.log = ui.cons.out;
+        Debug.add(ui.cons.out);
         opts.c = sz.sub(opts.sz).div(2);
         pointer = add(new MapPointer());
         foragehelper = add(new ForageHelperWnd());

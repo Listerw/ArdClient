@@ -2,6 +2,7 @@ package modification;
 
 import haven.CheckListbox;
 import haven.CheckListboxItem;
+import haven.Debug;
 import haven.GItem;
 import haven.Resource;
 import haven.UI;
@@ -64,6 +65,7 @@ public class dev {
             System.err.println(sb.toString());
         }
         e.printStackTrace();
+        Debug.printStackTrace(e);
     }
 
     public static void simpleLog(String e) {
@@ -74,6 +76,7 @@ public class dev {
 
             System.err.println(sb.toString());
         }
+        Debug.println(e);
     }
 
     public static void simpleLog(String s, Throwable e) {
@@ -85,6 +88,7 @@ public class dev {
             System.err.println(sb.toString());
         }
         e.printStackTrace();
+        Debug.printStackTrace(e);
     }
 
     public static void sysPrintStackTrace(String text) {
