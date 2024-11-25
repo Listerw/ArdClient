@@ -7,7 +7,7 @@ import haven.TexGL;
 import haven.TexR;
 
 public class Clouds implements Glob.Weather {
-    public static final TexGL clouds = (TexGL) Resource.classres(Clouds.class).layer(TexR.class).tex();
+    public static final TexGL clouds = (TexGL) Resource.remote().loadwait("gfx/fx/clouds").layer(TexR.class).tex();
     float scale, cmin, cmax, rmin, rmax;
     float nscale, ncmin, ncmax, nrmin, nrmax;
     float oscale, ocmin, ocmax, ormin, ormax;
