@@ -1736,8 +1736,7 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
                 }
             }
             if ((!Config.showbarreltext || ols.isEmpty()) && barreltext != null) barreltext = null;
-            if ((!Config.showsigntext || ols.isEmpty()) && signtext != null) signtext = null;
-
+            if (!Config.showsigntext && signtext != null) signtext = null;
 
             Collection<GAttrib> attr = new ArrayList<>(this.attr.values());
             for (GAttrib a : attr)
