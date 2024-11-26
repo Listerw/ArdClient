@@ -56,6 +56,7 @@ import java.util.stream.DoubleStream;
 public class Inventory extends Widget implements DTarget2, ItemObserver, InventoryListener {
     public static final Coord sqsz = UI.scale(33, 33);
     public static final Tex invsq/* = Resource.loadtex("gfx/hud/invsq")*/;
+    private static final Set<String> PLAYER_INVENTORY_NAMES = new HashSet<>(Arrays.asList("Inventory", "Belt", "Equipment", "Character Sheet", "Study"));
     public boolean dropul = true;
     public Coord isz;
     public boolean[] sqmask = null;
