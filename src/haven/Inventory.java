@@ -37,6 +37,7 @@ import modification.configuration;
 import java.awt.Color;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
