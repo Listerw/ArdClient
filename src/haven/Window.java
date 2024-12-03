@@ -282,7 +282,13 @@ Window extends MovableWidget implements DTarget {
                     } else {
                         ui.gui.msg("Click Feast First!", Color.white);
                     }
+                }
 
+                @Override
+                public void tick(final double dt) {
+                    super.tick(dt);
+                    if (!visible && Window.this.children().stream().filter(Inventory.class::isInstance).count() == 3)
+                        show();
                 }
 
                 @Override
@@ -290,7 +296,7 @@ Window extends MovableWidget implements DTarget {
                     super.presize();
                     move(asz.sub(0, UI.scale(25)), 1, 1);
                 }
-            }, asz.sub(0, UI.scale(25)), 1, 1);
+            }, asz.sub(0, UI.scale(25)), 1, 1).hide();
         }
     }
 
