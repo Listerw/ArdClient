@@ -142,24 +142,29 @@ public class Glob {
 
     public static class CAttr extends Observable {
         public static final Text.Foundry fnd = new Text.Foundry(Text.sans, UI.scale(12));
-        public String nm;
+        public final Glob glob;
+        public final String nm;
         public int base, comp;
+        public ItemInfo.Raw info;
         private Text.Line compLine = null;
         public Tex comptex;
 
-        public CAttr(String nm, int base, int comp) {
+        public CAttr(Glob glob, String nm, int base, int comp, ItemInfo.Raw info) {
+            this.glob = glob;
             this.nm = nm.intern();
             this.base = base;
             this.comp = comp;
+            this.info = info;
             compLine = null;
             this.comptex = Text.renderstroked(comp + "", Color.WHITE, Color.BLACK, Text.num12boldFnd).tex();
         }
 
-        public void update(int base, int comp) {
+        public void update(int base, int comp, ItemInfo.Raw info) {
             if ((base == this.base) && (comp == this.comp))
                 return;
             this.base = base;
             this.comp = comp;
+            this.info = info;
             compLine = null;
             setChanged();
             notifyObservers(null);
@@ -619,7 +624,7 @@ public class Glob {
         return (((MapView) ((PView.WidgetContext) rl.state().get(PView.ctx)).widget()).amb);
     }
 
-    public CAttr getcattr(String nm) {
+    /*public CAttr getcattr(String nm) {
         synchronized (cattr) {
             CAttr a = cattr.get(nm);
             if (a == null) {
@@ -628,9 +633,20 @@ public class Glob {
             }
             return (a);
         }
+    }*/
+
+    public CAttr getcattr(String nm) {
+        synchronized (cattr) {
+            CAttr a = cattr.get(nm);
+            if (a == null) {
+                a = new CAttr(this, nm, 0, 0, ItemInfo.Raw.nil);
+                cattr.put(nm, a);
+            }
+            return (a);
+        }
     }
 
-    public void cattr(String nm, int base, int comp) {
+    /*public void cattr(String nm, int base, int comp) {
         synchronized (cattr) {
             CAttr a = cattr.get(nm);
             if (a == null) {
@@ -640,9 +656,21 @@ public class Glob {
                 a.update(base, comp);
             }
         }
+    }*/
+
+    public void cattr(String nm, int base, int comp, ItemInfo.Raw info) {
+        synchronized (cattr) {
+            CAttr a = cattr.get(nm);
+            if (a == null) {
+                a = new CAttr(this, nm, base, comp, info);
+                cattr.put(nm, a);
+            } else {
+                a.update(base, comp, info);
+            }
+        }
     }
 
-    public void cattr(Message msg) {
+    /*public void cattr(Message msg) {
         synchronized (cattr) {
             while (!msg.eom()) {
                 String nm = msg.string();
@@ -651,8 +679,7 @@ public class Glob {
                 cattr(nm, base, comp);
             }
         }
-    }
-
+    }*/
 
     //Map
     private static final String mapFileName = "fogofwar.v2";

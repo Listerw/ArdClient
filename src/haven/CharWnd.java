@@ -2632,11 +2632,14 @@ public class CharWnd extends Window {
     public void uimsg(String nm, Object... args) {
         if(nm == "attr") {
             int a = 0;
-            while(a < args.length) {
-                String attr = (String)args[a++];
-                int base = (Integer)args[a++];
-                int comp = (Integer)args[a++];
-                ui.sess.glob.cattr(attr, base, comp);
+            while (a < args.length) {
+                String attr = (String) args[a++];
+                int base = Utils.iv(args[a++]);
+                int comp = Utils.iv(args[a++]);
+                ItemInfo.Raw info = ItemInfo.Raw.nil;
+                if ((a < args.length) && (args[a] instanceof Object[]))
+                    info = new ItemInfo.Raw((Object[]) args[a++]);
+                ui.sess.glob.cattr(attr, base, comp, info);
             }
         } else if (nm == "exp") {
             exp = ((Number) args[0]).intValue();
