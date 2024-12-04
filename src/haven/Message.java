@@ -33,6 +33,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public abstract class Message {
     public static final int T_END = 0;
@@ -66,6 +67,7 @@ public abstract class Message {
     public static final int T_MNORM32 = 31;
     public static final int T_MAP = 32;
     public static final int T_LONG = 33;
+    public static final int T_RESSPEC = 34;
 
     private final static byte[] empty = new byte[0];
     public int rh = 0, rt = 0, wh = 0, wt = 0;
@@ -316,7 +318,7 @@ public abstract class Message {
         return (uint32() / 0x100000000p0);
     }
 
-    public Object tto(int type) {
+    public Object tto0(int type, Function<Object, ? extends Object> mapper) {
         switch (type) {
             case T_INT:
                 return (int32());
@@ -337,7 +339,7 @@ public abstract class Message {
             case T_FCOLOR:
                 return (fcolor());
             case T_TTOL:
-                return (list());
+                return (list(mapper));
             case T_NIL:
                 return (null);
             case T_UID:
@@ -378,19 +380,30 @@ public abstract class Message {
             case T_MNORM32:
                 return (NormNumber.decmnorm32(this));
             case T_MAP:
-                return(map());
+                return (map(mapper));
             case T_LONG:
-                return(int64());
+                return (int64());
+            case T_RESSPEC:
+                return (new Resource.Spec(null, string(), uint16()));
             default:
                 throw (new FormatError("unknown type tag: " + type).msg(this));
         }
     }
 
-    public Object tto() {
-        return (tto(uint8()));
+    public Object tto(int type, Function<Object, ? extends Object> mapper) {
+        Object ret = tto0(type, mapper);
+        if (mapper != null)
+            ret = mapper.apply(ret);
+        return (ret);
     }
 
-    public Object[] list() {
+    public Object tto(int type) {return (tto(type, null));}
+
+    public Object tto(Function<Object, ? extends Object> mapper) {
+        return (tto(uint8(), mapper));
+    }
+
+    public Object[] list(Function<Object, ? extends Object> mapper) {
         ArrayList<Object> ret = new ArrayList<Object>();
         while (true) {
             if (eom())
@@ -398,20 +411,24 @@ public abstract class Message {
             int t = uint8();
             if (t == T_END)
                 break;
-            ret.add(tto(t));
+            ret.add(tto(t, mapper));
         }
         return (ret.toArray());
     }
 
-    public Map<Object, Object> map() {
-	Object[] list = list();
-	if((list.length % 2) != 0)
-	    throw(new FormatError("map-list length not a multiple of two"));
-	Map<Object, Object> ret = new HashMap<>();
-	for(int i = 0; i < list.length; i += 2)
-	    ret.put(list[i], list[i + 1]);
-	return(ret);
+    public Object[] list() {return (list(null));}
+
+    public Map<Object, Object> map(Function<Object, ? extends Object> mapper) {
+        Object[] list = list(mapper);
+        if ((list.length % 2) != 0)
+            throw (new FormatError("map-list length not a multiple of two"));
+        Map<Object, Object> ret = new HashMap<>();
+        for (int i = 0; i < list.length; i += 2)
+            ret.put(list[i], list[i + 1]);
+        return (ret);
     }
+
+    public Map<Object, Object> map() {return (map(null));}
 
     public abstract void overflow(int min);
 
@@ -482,7 +499,7 @@ public abstract class Message {
     }
 
     public Message adduniqid(UID uid) {
-        return(addint64(uid.bits));
+        return (addint64(uid.bits));
     }
 
     public Message addstring2(String str) {
@@ -545,123 +562,127 @@ public abstract class Message {
     }
 
     public Message addtto(Object o) {
-        if(o == null) {
+        if (o == null) {
             adduint8(T_NIL);
-        } else if((o instanceof Byte) || (o instanceof Short) || (o instanceof Integer) || (o instanceof Long)) {
-            long v = ((Number)o).longValue();
-            if((v >= 0) && (v < 256)) {
+        } else if ((o instanceof Byte) || (o instanceof Short) || (o instanceof Integer) || (o instanceof Long)) {
+            long v = ((Number) o).longValue();
+            if ((v >= 0) && (v < 256)) {
                 adduint8(T_UINT8);
-                adduint8((int)v);
-            } else if((v >= 0) && (v < 65536)) {
+                adduint8((int) v);
+            } else if ((v >= 0) && (v < 65536)) {
                 adduint8(T_UINT16);
-                adduint16((int)v);
-            } else if((v >= -128) && (v < 0)) {
+                adduint16((int) v);
+            } else if ((v >= -128) && (v < 0)) {
                 adduint8(T_INT8);
-                addint8((byte)v);
-            } else if((v >= -32768) && (v < 0)) {
+                addint8((byte) v);
+            } else if ((v >= -32768) && (v < 0)) {
                 adduint8(T_INT16);
-                addint16((short)v);
-            } else if((v >= Integer.MIN_VALUE) && (v <= Integer.MAX_VALUE)) {
+                addint16((short) v);
+            } else if ((v >= Integer.MIN_VALUE) && (v <= Integer.MAX_VALUE)) {
                 adduint8(T_INT);
-                addint32((int)v);
+                addint32((int) v);
             } else {
                 adduint8(T_LONG);
                 addint64(v);
             }
-        } else if(o instanceof String) {
+        } else if (o instanceof String) {
             adduint8(T_STR);
-            addstring((String)o);
-        } else if(o instanceof Coord) {
+            addstring((String) o);
+        } else if (o instanceof Coord) {
             adduint8(T_COORD);
-            addcoord((Coord)o);
-        } else if(o instanceof byte[]) {
-            byte[] b = (byte[])o;
+            addcoord((Coord) o);
+        } else if (o instanceof byte[]) {
+            byte[] b = (byte[]) o;
             adduint8(T_BYTES);
-            if(b.length < 128) {
+            if (b.length < 128) {
                 adduint8(b.length);
             } else {
                 adduint8(0x80);
                 addint32(b.length);
             }
             addbytes(b);
-        } else if(o instanceof Color) {
+        } else if (o instanceof Color) {
             adduint8(T_COLOR);
-            addcolor((Color)o);
-        } else if(o instanceof FColor) {
+            addcolor((Color) o);
+        } else if (o instanceof FColor) {
             adduint8(T_FCOLOR);
-            addfcolor((FColor)o);
-        } else if(o instanceof MiniFloat) {
+            addfcolor((FColor) o);
+        } else if (o instanceof MiniFloat) {
             adduint8(T_FLOAT8);
-            addint8(((MiniFloat)o).bits);
-        } else if(o instanceof HalfFloat) {
+            addint8(((MiniFloat) o).bits);
+        } else if (o instanceof HalfFloat) {
             adduint8(T_FLOAT16);
-            addint16(((HalfFloat)o).bits);
-        } else if(o instanceof Float) {
+            addint16(((HalfFloat) o).bits);
+        } else if (o instanceof Float) {
             adduint8(T_FLOAT32);
-            addfloat32(((Float)o).floatValue());
-        } else if(o instanceof Double) {
+            addfloat32(((Float) o).floatValue());
+        } else if (o instanceof Double) {
             adduint8(T_FLOAT64);
-            addfloat64(((Double)o).doubleValue());
-        } else if(o instanceof UID) {
+            addfloat64(((Double) o).doubleValue());
+        } else if (o instanceof UID) {
             adduint8(T_UID);
-            addint64(((UID)o).longValue());
-        } else if(o instanceof NormNumber.SNorm8) {
+            addint64(((UID) o).longValue());
+        } else if (o instanceof NormNumber.SNorm8) {
             adduint8(T_SNORM8);
-            addint8(((NormNumber.SNorm8)o).val);
-        } else if(o instanceof NormNumber.UNorm8) {
+            addint8(((NormNumber.SNorm8) o).val);
+        } else if (o instanceof NormNumber.UNorm8) {
             adduint8(T_UNORM8);
-            adduint8(((NormNumber.UNorm8)o).val & 0xff);
-        } else if(o instanceof NormNumber.MNorm8) {
+            adduint8(((NormNumber.UNorm8) o).val & 0xff);
+        } else if (o instanceof NormNumber.MNorm8) {
             adduint8(T_MNORM8);
-            adduint8(((NormNumber.MNorm8)o).val & 0xff);
-        } else if(o instanceof NormNumber.SNorm16) {
+            adduint8(((NormNumber.MNorm8) o).val & 0xff);
+        } else if (o instanceof NormNumber.SNorm16) {
             adduint8(T_SNORM16);
-            addint16(((NormNumber.SNorm16)o).val);
-        } else if(o instanceof NormNumber.UNorm16) {
+            addint16(((NormNumber.SNorm16) o).val);
+        } else if (o instanceof NormNumber.UNorm16) {
             adduint8(T_UNORM16);
-            adduint16(((NormNumber.UNorm16)o).val & 0xffff);
-        } else if(o instanceof NormNumber.MNorm16) {
+            adduint16(((NormNumber.UNorm16) o).val & 0xffff);
+        } else if (o instanceof NormNumber.MNorm16) {
             adduint8(T_MNORM16);
-            adduint16(((NormNumber.MNorm16)o).val & 0xffff);
-        } else if(o instanceof NormNumber.SNorm32) {
+            adduint16(((NormNumber.MNorm16) o).val & 0xffff);
+        } else if (o instanceof NormNumber.SNorm32) {
             adduint8(T_SNORM32);
-            addint32(((NormNumber.SNorm32)o).val);
-        } else if(o instanceof NormNumber.UNorm32) {
+            addint32(((NormNumber.SNorm32) o).val);
+        } else if (o instanceof NormNumber.UNorm32) {
             adduint8(T_UNORM32);
-            addint32(((NormNumber.UNorm32)o).val);
-        } else if(o instanceof NormNumber.MNorm32) {
+            addint32(((NormNumber.UNorm32) o).val);
+        } else if (o instanceof NormNumber.MNorm32) {
             adduint8(T_MNORM32);
-            adduint32(((NormNumber.MNorm32)o).val);
-        } else if(o instanceof Coord2d) {
+            adduint32(((NormNumber.MNorm32) o).val);
+        } else if (o instanceof Coord2d) {
             adduint8(T_FCOORD64);
-            addfloat64(((Coord2d)o).x);
-            addfloat64(((Coord2d)o).y);
-        } else if(o instanceof Object[]) {
+            addfloat64(((Coord2d) o).x);
+            addfloat64(((Coord2d) o).y);
+        } else if (o instanceof Resource.Named) {
+            adduint8(T_RESSPEC);
+            addstring(((Resource.Named) o).name);
+            adduint16(((Resource.Named) o).ver);
+        } else if (o instanceof Object[]) {
             adduint8(T_TTOL);
-            addlist((Object[])o);
+            addlist((Object[]) o);
             adduint8(T_END);
-        } else if(o instanceof Map) {
+        } else if (o instanceof Map) {
             adduint8(T_MAP);
-            addmap((Map<?, ?>)o);
+            addmap((Map<?, ?>) o);
             adduint8(T_END);
         } else {
-            throw(new RuntimeException("Cannot encode a " + o.getClass() + " as TTO"));
+            throw (new RuntimeException("Cannot encode a " + o.getClass() + " as TTO"));
         }
-        return(this);
+        return (this);
     }
 
     public Message addlist(Object... args) {
-        for(Object o : args)
+        for (Object o : args)
             addtto(o);
-        return(this);
+        return (this);
     }
 
     public Message addmap(Map<?, ?> map) {
-        for(Map.Entry<?, ?> e : map.entrySet()) {
+        for (Map.Entry<?, ?> e : map.entrySet()) {
             addtto(e.getKey());
             addtto(e.getValue());
         }
-        return(this);
+        return (this);
     }
 
     public int peekrbuf(int i) {

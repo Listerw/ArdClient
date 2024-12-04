@@ -60,8 +60,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
@@ -210,25 +208,25 @@ public class Resource implements Serializable {
         Indir<Resource> getres(int id);
 
         public default Indir<Resource> dynres(UID uid) {
-            return(() -> {throw(new NoSuchResourceException(String.format("dyn/%x", uid.longValue()), 1, null));});
+            return (() -> {throw (new NoSuchResourceException(String.format("dyn/%x", uid.longValue()), 1, null));});
         }
 
         default Indir<Resource> getresv(Object desc) {
             if (desc == null)
                 return (null);
-            if(desc instanceof UID)
-                return(dynres((UID)desc));
+            if (desc instanceof UID)
+                return (dynres((UID) desc));
             if (desc instanceof Number) {
                 int id = ((Number) desc).intValue();
                 if (id < 0)
                     return (null);
                 return (this.getres(id));
             }
-            if(desc instanceof Resource)
-                return(((Resource)desc).indir());
-            if(desc instanceof Indir) {
-                @SuppressWarnings("unchecked") Indir<Resource> ret = (Indir<Resource>)desc;
-                return(ret);
+            if (desc instanceof Resource)
+                return (((Resource) desc).indir());
+            if (desc instanceof Indir) {
+                @SuppressWarnings("unchecked") Indir<Resource> ret = (Indir<Resource>) desc;
+                return (ret);
             }
             throw (new ClassCastException("unknown type for resource id: " + desc));
         }
@@ -275,7 +273,7 @@ public class Resource implements Serializable {
             }
 
             public Indir<Resource> dynres(UID uid) {
-                return(bk.dynres(uid));
+                return (bk.dynres(uid));
             }
 
             public String toString() {
@@ -431,15 +429,15 @@ public class Resource implements Serializable {
             /* This is kinda crazy, but it is, actually, how the Java
              * documentation recommends that it be done... */
             try {
-                return(new URI(new URI(raw.getScheme(), raw.getUserInfo(), raw.getHost(), raw.getPort(), raw.getPath(), raw.getQuery(), raw.getFragment()).toASCIIString()));
-            } catch(URISyntaxException e) {
-                throw(new IOException(e));
+                return (new URI(new URI(raw.getScheme(), raw.getUserInfo(), raw.getHost(), raw.getPort(), raw.getPath(), raw.getQuery(), raw.getFragment()).toASCIIString()));
+            } catch (URISyntaxException e) {
+                throw (new IOException(e));
             }
         }
 
         @Override
         public InputStream get(String name) throws IOException {
-            return(Http.fetch(encodeuri(base.resolve(name + ".res")).toURL(), c -> {
+            return (Http.fetch(encodeuri(base.resolve(name + ".res")).toURL(), c -> {
                 /* Apparently, some versions of Java Web Start has
                  * a bug in its internal cache where it refuses to
                  * reload a URL even when it has changed. */
@@ -483,60 +481,60 @@ public class Resource implements Serializable {
     }
 
     public static class BadResourceException extends RuntimeException {
-	public final String name;
-	public final int ver;
+        public final String name;
+        public final int ver;
 
-	public BadResourceException(String name, int ver, String message, Throwable cause) {
-	    super(message, cause);
-	    this.name = name;
-	    this.ver = ver;
-	}
+        public BadResourceException(String name, int ver, String message, Throwable cause) {
+            super(message, cause);
+            this.name = name;
+            this.ver = ver;
+        }
 
-	public BadResourceException(String name, int ver, String message) {
-	    this(name, ver, message, null);
-	}
+        public BadResourceException(String name, int ver, String message) {
+            this(name, ver, message, null);
+        }
 
-	public BadResourceException(String name, int ver, Throwable cause) {
-	    this(name, ver, null, cause);
-	}
+        public BadResourceException(String name, int ver, Throwable cause) {
+            this(name, ver, null, cause);
+        }
 
-	public BadResourceException(String name, int ver) {
-	    this(name, ver, null, null);
-	}
+        public BadResourceException(String name, int ver) {
+            this(name, ver, null, null);
+        }
     }
 
     public static class LoadFailedException extends BadResourceException {
-	public LoadFailedException(String name, int ver, LoadException cause) {
-	    super(name, ver, cause);
-	}
+        public LoadFailedException(String name, int ver, LoadException cause) {
+            super(name, ver, cause);
+        }
 
-	public String getMessage() {
-	    return(String.format("Failed to load resource %s (v%d)", name, ver));
-	}
+        public String getMessage() {
+            return (String.format("Failed to load resource %s (v%d)", name, ver));
+        }
     }
 
     public static class NoSuchResourceException extends LoadFailedException {
-	public NoSuchResourceException(String name, int ver, LoadException cause) {
-	    super(name, ver, cause);
-	}
+        public NoSuchResourceException(String name, int ver, LoadException cause) {
+            super(name, ver, cause);
+        }
     }
 
     public static class BadVersionException extends BadResourceException {
-	public final int curver;
-	public final String cursrc;
+        public final int curver;
+        public final String cursrc;
 
-	public BadVersionException(String name, int ver, int curver, ResSource cursrc) {
-	    super(name, ver);
-	    this.curver = curver;
-	    this.cursrc = (cursrc == null) ? null : String.valueOf(cursrc);
-	}
+        public BadVersionException(String name, int ver, int curver, ResSource cursrc) {
+            super(name, ver);
+            this.curver = curver;
+            this.cursrc = (cursrc == null) ? null : String.valueOf(cursrc);
+        }
 
-	public String getMessage() {
-	    if(cursrc == null)
-		return(String.format("Obsolete version %d of %s requested, loaded version is %d", ver, name, curver));
-	    else
-		return(String.format("Obsolete version %d of %s requested, loaded version is %d, from %s", ver, name, curver, cursrc));
-	}
+        public String getMessage() {
+            if (cursrc == null)
+                return (String.format("Obsolete version %d of %s requested, loaded version is %d", ver, name, curver));
+            else
+                return (String.format("Obsolete version %d of %s requested, loaded version is %d, from %s", ver, name, curver, cursrc));
+        }
     }
 
     public static class Pool {
@@ -782,7 +780,7 @@ public class Resource implements Serializable {
         }
 
         public Indir<Resource> dynres(UID id) {
-            return(dynres(id.bits));
+            return (dynres(id.bits));
         }
 
         private void ckld() {
@@ -1037,6 +1035,18 @@ public class Resource implements Serializable {
         return (new Coord2d(buf.int16(), buf.int16()));
     }
 
+    public static class PoolMapper implements Function<Object, Object> {
+        public final Pool pool;
+
+        public PoolMapper(Pool pool) {this.pool = pool;}
+
+        public Object apply(Object obj) {
+            if (obj instanceof Spec)
+                return (new Spec(pool, ((Spec) obj).name, ((Spec) obj).ver));
+            return (obj);
+        }
+    }
+
     public abstract class Layer implements Serializable {
         public abstract void init();
 
@@ -1049,6 +1059,10 @@ public class Resource implements Serializable {
                 return (String.format("#<%s (%s) in %s>", getClass().getSimpleName(), ((IDLayer) this).layerid(), Resource.this.name));
             else
                 return (String.format("#<%s in %s>", getClass().getSimpleName(), Resource.this.name));
+        }
+
+        protected Function<Object, Object> resmapper() {
+            return (new PoolMapper(Resource.this.pool));
         }
     }
 

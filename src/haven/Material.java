@@ -459,7 +459,7 @@ public class Material extends GLState {
             Res ret = new Res(res, id);
             while (!buf.eom()) {
                 String nm = buf.string();
-                Object[] args = buf.list();
+                Object[] args = buf.list(new Resource.PoolMapper(res.pool));
                 if (nm.equals("linear")) {
                     /* XXX: These should very much be removed and
                      * specified directly in the texture layer

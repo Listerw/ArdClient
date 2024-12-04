@@ -42,7 +42,7 @@ import java.util.TreeMap;
 import java.util.function.Consumer;
 
 public class Session implements Resource.Resolver {
-    public static final int PVER = 28;
+    public static final int PVER = 29;
 
     public static final int MSG_SESS = 0;
     public static final int MSG_REL = 1;
@@ -256,7 +256,7 @@ public class Session implements Resource.Resolver {
     }
 
     public Indir<Resource> dynres(UID uid) {
-        return(Resource.remote().dynres(uid));
+        return (Resource.remote().dynres(uid));
     }
 
     public int getresid(Resource res) {
