@@ -12,6 +12,7 @@ import haven.Loading;
 import static haven.OCache.posres;
 import haven.Resource;
 import haven.Sprite;
+import haven.UI;
 import haven.WItem;
 import haven.Widget;
 import haven.Window;
@@ -52,7 +53,7 @@ public class SeedCropFarmer extends Window implements Runnable {
     //private Gob barrel;
 
     public SeedCropFarmer(Coord rc1, Coord rc2, String cropName, String seedName, int stage, boolean replant, boolean containeronly, boolean replantcontainer, ArrayList<Gob> containers, boolean stockpile, ArrayList<Coord> stockpileLocs) {
-        super(new Coord(120, 65), cropName.substring(cropName.lastIndexOf("/") + 1).substring(0, 1).toUpperCase()
+        super(UI.scale(120, 65), cropName.substring(cropName.lastIndexOf("/") + 1).substring(0, 1).toUpperCase()
                 + cropName.substring(cropName.lastIndexOf("/") + 1).substring(1) + " Farmer");
         this.rc1 = rc1;
         this.rc2 = rc2;
@@ -68,13 +69,13 @@ public class SeedCropFarmer extends Window implements Runnable {
         //	this.barrel = barrel;
 
         Label lblstxt = new Label("Progress:");
-        add(lblstxt, new Coord(15, 35));
+        add(lblstxt, UI.scale(15, 35));
         lblProg = new Label("Initialising...");
-        add(lblProg, new Coord(67, 35));
+        add(lblProg, UI.scale(67, 35));
         lblProg2 = new Label("Initialising...");
-        add(lblProg2, new Coord(0, 55));
+        add(lblProg2, UI.scale(0, 55));
 
-        Button stopBtn = new Button(120, "Stop") {
+        Button stopBtn = new Button(UI.scale(120), "Stop") {
             @Override
             public void click() {
                 stop();

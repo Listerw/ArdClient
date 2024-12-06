@@ -6,6 +6,7 @@ import haven.Coord;
 import haven.Gob;
 import haven.Label;
 import haven.MCache;
+import haven.UI;
 import haven.Widget;
 import haven.WidgetVerticalAppender;
 import haven.Window;
@@ -29,12 +30,13 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
     private boolean areaselected = false;
 
     public Farmer() {
-        super(new Coord(350, 410), "Farming Bots", "Farming Bots");
+        super(UI.scale(350, 410), "Farming Bots", "Farming Bots");
     }
 
     public void added() {
+        int btnszx = UI.scale(140);
         PBotUtils.debugMsg(ui, "Hold alt and left click containers to select them.", Color.white);
-        Button carrotBtn = new Button(140, "Carrot") {
+        Button carrotBtn = new Button(btnszx, "Carrot") {
             @Override
             public void click() {
                 if (ca != null && cb != null) {
@@ -50,7 +52,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button carrotseedBtn = new Button(140, "Carrot Seeds") {
+        Button carrotseedBtn = new Button(btnszx, "Carrot Seeds") {
             @Override
             public void click() {
                 if (replantcontainer && containers.size() == 0 || containeronly && containers.size() == 0) {
@@ -67,7 +69,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button beetBtn = new Button(140, "Beetroot") {
+        Button beetBtn = new Button(btnszx, "Beetroot") {
             @Override
             public void click() {
                 if (ca != null && cb != null) {
@@ -82,7 +84,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button turnipBtn = new Button(140, "Turnip") {
+        Button turnipBtn = new Button(btnszx, "Turnip") {
             @Override
             public void click() {
                 if (ca != null && cb != null) {
@@ -97,7 +99,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button turnipseedBtn = new Button(140, "Turnip Seeds") {
+        Button turnipseedBtn = new Button(btnszx, "Turnip Seeds") {
             @Override
             public void click() {
                 if (replantcontainer && containers.size() == 0 || containeronly && containers.size() == 0) {
@@ -113,7 +115,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button turnip2Btn = new Button(140, "Turnip Stage 3") {
+        Button turnip2Btn = new Button(btnszx, "Turnip Stage 3") {
             @Override
             public void click() {
                 if (ca != null && cb != null) {
@@ -128,7 +130,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button onionBtn = new Button(140, "Yellow Onion") {
+        Button onionBtn = new Button(btnszx, "Yellow Onion") {
             @Override
             public void click() {
                 if (ca != null && cb != null) {
@@ -144,7 +146,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button redOnionBtn = new Button(140, "Red Onion") {
+        Button redOnionBtn = new Button(btnszx, "Red Onion") {
             @Override
             public void click() {
                 if (ca != null && cb != null) {
@@ -160,7 +162,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button leekBtn = new Button(140, "Leeks") {
+        Button leekBtn = new Button(btnszx, "Leeks") {
             @Override
             public void click() {
                 if (ca != null && cb != null) {
@@ -175,7 +177,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button pumpkinBtn = new Button(140, "Pumpkin") {
+        Button pumpkinBtn = new Button(btnszx, "Pumpkin") {
             @Override
             public void click() {
                 if (ca != null && cb != null) {
@@ -188,7 +190,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button barleyBtn = new Button(140, "Barley") {
+        Button barleyBtn = new Button(btnszx, "Barley") {
             @Override
             public void click() {
                 if (replantcontainer && containers.size() == 0 || containeronly && containers.size() == 0) {
@@ -206,7 +208,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button wheatBtn = new Button(140, "Wheat") {
+        Button wheatBtn = new Button(btnszx, "Wheat") {
             @Override
             public void click() {
                 if (replantcontainer && containers.size() == 0 || containeronly && containers.size() == 0) {
@@ -224,7 +226,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button milletBtn = new Button(140, "Millet") {
+        Button milletBtn = new Button(btnszx, "Millet") {
             @Override
             public void click() {
                 if (replantcontainer && containers.size() == 0 || containeronly && containers.size() == 0) {
@@ -242,7 +244,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button flaxBtn = new Button(140, "Flax") {
+        Button flaxBtn = new Button(btnszx, "Flax") {
             @Override
             public void click() {
                 if (replantcontainer && containers.size() == 0 || containeronly && containers.size() == 0) {
@@ -259,7 +261,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button hempBtn = new Button(140, "Hemp") {
+        Button hempBtn = new Button(btnszx, "Hemp") {
             @Override
             public void click() {
                 if (replantcontainer && containers.size() == 0 || containeronly && containers.size() == 0) {
@@ -275,7 +277,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                     PBotUtils.debugMsg(ui, "Area not selected!", Color.WHITE);
             }
         };
-        Button poppyBtn = new Button(140, "Poppy") {
+        Button poppyBtn = new Button(btnszx, "Poppy") {
             @Override
             public void click() {
                 if (replantcontainer && containers.size() == 0 || containeronly && containers.size() == 0) {
@@ -292,7 +294,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button pipeBtn = new Button(140, "Pipeweed") {
+        Button pipeBtn = new Button(btnszx, "Pipeweed") {
             @Override
             public void click() {
                 if (replantcontainer && containers.size() == 0 || containeronly && containers.size() == 0) {
@@ -308,7 +310,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                     PBotUtils.debugMsg(ui, "Area not selected!", Color.WHITE);
             }
         };
-        Button lettuceBtn = new Button(140, "Lettuce") {
+        Button lettuceBtn = new Button(btnszx, "Lettuce") {
             @Override
             public void click() {
                 if (replantcontainer && containers.size() == 0 || containeronly && containers.size() == 0) {
@@ -324,7 +326,23 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                     PBotUtils.debugMsg(ui, "Area not selected!", Color.WHITE);
             }
         };
-        Button trelHarBtn = new Button(140, "Trellis harvest") {
+        Button kaleBtn = new Button(btnszx, "Green Kale") {
+            @Override
+            public void click() {
+                if (replantcontainer && containers.size() == 0 || containeronly && containers.size() == 0) {
+                    PBotUtils.debugMsg(ui, "Please select a container by holding alt and clicking it before starting if using barrel or replantbarrel.", Color.white);
+                } else if (ca != null && cb != null) {
+                    // Start hemp farmer and close this window
+                    SeedCropFarmer bf = new SeedCropFarmer(ca, cb, "gfx/terobjs/plants/greenkale", "gfx/invobjs/seed-greenkale", 5, replant, containeronly, replantcontainer, containers, stockpile, stockpileLocs);
+
+                    ui.gui.add(bf, new Coord(ui.gui.sz.x / 2 - bf.sz.x / 2, ui.gui.sz.y / 2 - bf.sz.y / 2 - 200));
+                    new Thread(bf).start();
+                    this.parent.destroy();
+                } else
+                    PBotUtils.debugMsg(ui, "Area not selected!", Color.WHITE);
+            }
+        };
+        Button trelHarBtn = new Button(btnszx, "Trellis harvest") {
             @Override
             public void click() {
                 if (ca != null && cb != null) {
@@ -339,7 +357,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button trelDesBtn = new Button(140, "Trellis destroy") {
+        Button trelDesBtn = new Button(btnszx, "Trellis destroy") {
             @Override
             public void click() {
                 if (ca != null && cb != null) {
@@ -354,7 +372,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button trelPlantBtn = new Button(140, "Trellis plant") {
+        Button trelPlantBtn = new Button(btnszx, "Trellis plant") {
             @Override
             public void click() {
                 if (ca != null && cb != null) {
@@ -368,14 +386,14 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
                 }
             }
         };
-        Button areaSelBtn = new Button(140, "Select Area") {
+        Button areaSelBtn = new Button(btnszx, "Select Area") {
             @Override
             public void click() {
                 PBotUtils.debugMsg(ui, "Drag area over crops", Color.WHITE);
                 ui.gui.map.farmSelect = true;
             }
         };
-        stockpilearea = new Button(140, "Stockpile Area") {
+        stockpilearea = new Button(btnszx, "Stockpile Area") {
             @Override
             public void click() {
                 if (ca == null && cb == null) {
@@ -447,7 +465,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
         };
 
         final WidgetVerticalAppender appender = new WidgetVerticalAppender(this);
-        appender.addRow(areaSelBtn, stockpilearea, new Button(140, "Water Settings") {
+        appender.addRow(areaSelBtn, stockpilearea, new Button(btnszx, "Water Settings") {
             @Override
             public void click() {
                 ui.gui.toggleWaterSettings();
@@ -464,7 +482,7 @@ public class Farmer extends Window implements AreaSelectCallback, GobSelectCallb
         appender.addRow(flaxBtn, hempBtn);
         appender.add(poppyBtn);
         appender.add(pipeBtn);
-        appender.add(lettuceBtn);
+        appender.addRow(lettuceBtn, kaleBtn);
         appender.addRow(trelHarBtn, trelDesBtn, trelPlantBtn);
 
         pack();
