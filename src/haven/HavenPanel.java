@@ -508,6 +508,39 @@ public class HavenPanel extends GLCanvas implements Runnable, Console.Directory,
             }
         }
 
+        Resource curs;
+        synchronized (ui) {
+            curs = ui.getcurs(mousepos);
+        }
+        cursmode = configuration.nocursor ? "no" : (Toolkit.getDefaultToolkit().getMaximumCursorColors() >= 256 || Config.hwcursor) ? "awt" : "tex";
+        if (cursmode == "awt") {
+            if (curs != lastcursor || cursmode != lastcursmode) {
+                try {
+                    if (curs == null)
+                        setCursor(null);
+                    else
+                        setCursor(makeawtcurs(curs.layer(Resource.imgc).img, curs.layer(Resource.negc).cc));
+                } catch (Exception e) {
+                    cursmode = "tex";
+                }
+            }
+        } else if (cursmode == "tex") {
+            if (curs == null) {
+                if (lastcursor != null && cursmode != lastcursmode)
+                    setCursor(null);
+            } else {
+                if (lastcursor == null || cursmode != lastcursmode)
+                    setCursor(emptycurs);
+                Coord dc = mousepos.add(curs.layer(Resource.negc).cc.inv());
+                g.image(curs.layer(Resource.imgc), dc);
+            }
+        } else if (cursmode == "no") {
+            if (cursmode != lastcursmode)
+                setCursor(null);
+        }
+        lastcursmode = cursmode;
+        lastcursor = curs;
+
         Object tooltip;
         try {
             synchronized (ui) {
@@ -549,38 +582,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Console.Directory,
             g.image(tt, pos);
         }
         ui.lasttip = tooltip;
-        Resource curs;
-        synchronized (ui) {
-            curs = ui.getcurs(mousepos);
-        }
-        cursmode = configuration.nocursor ? "no" : (Toolkit.getDefaultToolkit().getMaximumCursorColors() >= 256 || Config.hwcursor) ? "awt" : "tex";
-        if (cursmode == "awt") {
-            if (curs != lastcursor || cursmode != lastcursmode) {
-                try {
-                    if (curs == null)
-                        setCursor(null);
-                    else
-                        setCursor(makeawtcurs(curs.layer(Resource.imgc).img, curs.layer(Resource.negc).cc));
-                } catch (Exception e) {
-                    cursmode = "tex";
-                }
-            }
-        } else if (cursmode == "tex") {
-            if (curs == null) {
-                if (lastcursor != null && cursmode != lastcursmode)
-                    setCursor(null);
-            } else {
-                if (lastcursor == null || cursmode != lastcursmode)
-                    setCursor(emptycurs);
-                Coord dc = mousepos.add(curs.layer(Resource.negc).cc.inv());
-                g.image(curs.layer(Resource.imgc), dc);
-            }
-        } else if (cursmode == "no") {
-            if (cursmode != lastcursmode)
-                setCursor(null);
-        }
-        lastcursmode = cursmode;
-        lastcursor = curs;
+
         state.clean();
         GLObject.disposeall(state.cgl, gl);
         if (gldebug)
