@@ -28,6 +28,7 @@ package haven;
 
 import haven.sloth.gui.SessionDisplay;
 import modification.configuration;
+
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 
@@ -114,32 +115,28 @@ public class RootWidget extends ConsoleHost implements UI.MessageWidget {
             if (args.length == 1) {
                 ui.msg((String) args[0]);
             } else {
-                Defer.later(() -> {
+                ui.sess.glob.loader.defer(() -> {
                     int a = 0;
-                    String text = (String) args[a++];
-                    Color color = Color.WHITE;
+                    UI.SimpleMessage info = new UI.InfoMessage((String) args[a++]);
                     if (args[a] instanceof Color)
-                        color = (Color) args[a++];
+                        info.color = (Color) args[a++];
                     if (args.length > a) {
                         Indir<Resource> res = ui.sess.getresv(args[a++]);
-                        //info.sfx = (res == null) ? null : Audio.resclip(res.get());
+                        info.sfx = (res == null) ? null : Audio.fromres(res.get());
                     }
-                    ui.msg(text);
-                    return (null);
-                });
+                    ui.msg(info);
+                }, null);
             }
         } else if (msg == "msg2") {
-            Defer.later(() -> {
-                Resource res = ui.sess.getresv(args[0]).get();
-                //Notice.Factory fac = res.getcode(Notice.Factory.class, true);
-                /*ui.msg(fac.format(new OwnerContext() {
+            ui.sess.glob.loader.defer(() -> {
+                Resource res = Loading.waitfor(ui.sess.getresv(args[0]));
+                UI.Notice.Factory fac = res.getcode(UI.Notice.Factory.class, true);
+                ui.msg(fac.format(new OwnerContext() {
                     public <T> T context(Class<T> cl) {
                         return (wdgctx.context(cl, RootWidget.this));
                     }
-                }, Utils.splice(args, 1)));*/
-                ui.msg(res.toString());
-                return (null);
-            });
+                }, Utils.splice(args, 1)));
+            }, null);
         } else if (msg == "sfx") {
             int a = 0;
             Indir<Resource> resid = ui.sess.getres((Integer) args[a++]);
@@ -193,6 +190,16 @@ public class RootWidget extends ConsoleHost implements UI.MessageWidget {
         double now = Utils.rtime();
         if (now - lastmsgsfx > 0.1) {
             ui.sfx(msgsfx);
+            lastmsgsfx = now;
+        }
+    }
+
+    @Override
+    public void msg(UI.Notice msg) {
+        msg(msg.message(), msg.color());
+        double now = Utils.rtime();
+        if (now - lastmsgsfx > 0.1) {
+            ui.sfx(msg.sfx());
             lastmsgsfx = now;
         }
     }

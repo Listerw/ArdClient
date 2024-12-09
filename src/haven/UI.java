@@ -29,6 +29,7 @@ package haven;
 import modification.configuration;
 import modification.dev;
 
+import java.awt.Color;
 import java.awt.DisplayMode;
 import java.awt.Font;
 import java.awt.GraphicsDevice;
@@ -271,8 +272,8 @@ public class UI {
         try {
             if (parent == beltWndId)
                 f = Widget.gettype2("inv-belt");
-    //        else if (type.startsWith("gfx/hud/rosters/"))
-    //            f = Widget.gettype3(type);
+                //        else if (type.startsWith("gfx/hud/rosters/"))
+                //            f = Widget.gettype3(type);
             else
                 f = Widget.gettype2(type);
             if (f == null) {
@@ -401,8 +402,8 @@ public class UI {
                 gui.livestockwnd().applyName(wdg);
             else if (wdg instanceof Label)
                 gui.livestockwnd().applyAttr(cap, wdg);
-            else if (wdg instanceof ProxyFrame && ((ProxyFrame)wdg).ch instanceof Avaview)
-                gui.livestockwnd().applyId(((ProxyFrame)wdg).ch);
+            else if (wdg instanceof ProxyFrame && ((ProxyFrame) wdg).ch instanceof Avaview)
+                gui.livestockwnd().applyId(((ProxyFrame) wdg).ch);
         } else if (wdg instanceof ISBox && cap.equals("Stockpile")) {
             TextEntry entry = new TextEntry(40, "") {
                 String backup = text();
@@ -614,6 +615,10 @@ public class UI {
     }
 
     public interface MessageWidget {
+        default void msg(Notice msg) {
+            msg(msg.message());
+        }
+
         void msg(String msg);
 
         void error(String msg);
@@ -636,6 +641,14 @@ public class UI {
     }
 
     public void msg(String msg) {
+        MessageWidget h = MessageWidget.find(root);
+        if (h != null)
+            h.msg(msg);
+    }
+
+    public void msg(Notice msg) {
+        //dispatch(root, new NoticeEvent(msg));
+        Notice.dispatch(msg, root);
         MessageWidget h = MessageWidget.find(root);
         if (h != null)
             h.msg(msg);
@@ -763,7 +776,7 @@ public class UI {
     }
 
     public void mousehover(Coord c) {
-	    root.mousehover(c, true);
+        root.mousehover(c, true);
     }
 
     public void setmousepos(Coord c) {
@@ -829,6 +842,90 @@ public class UI {
 
     public void sfx(Resource clip) {
         sfx(Audio.fromres(clip));
+    }
+
+    public interface Notice {
+        public String message();
+
+        public default Color color() {return (Color.WHITE);}
+
+        public default Audio.CS sfx() {return (null);}
+
+        public default boolean handle(Widget w) {return (false);}
+
+        public static boolean dispatch(Notice msg, Widget w) {
+            for (Widget wdg = w.child; wdg != null; wdg = wdg.next) {
+                if (msg.handle(w))
+                    return (true);
+                if (dispatch(msg, wdg))
+                    return (true);
+            }
+            return (false);
+        }
+
+        @Resource.PublishedCode(name = "msg", instancer = FactMaker.class)
+        public interface Factory {
+            public Notice format(OwnerContext owner, Object... args);
+        }
+
+        public class FactMaker extends Resource.PublishedCode.Instancer.Chain<Factory> {
+            public FactMaker() {super(Factory.class);}
+
+            {
+                add(new Direct<>(Factory.class));
+                add(new StaticCall<>(Factory.class, "mkmessage", Notice.class, new Class<?>[]{OwnerContext.class, Object[].class},
+                        (make) -> (owner, args) -> make.apply(new Object[]{owner, args})));
+                add(new Construct<>(Factory.class, Notice.class, new Class<?>[]{OwnerContext.class, Object[].class},
+                        (cons) -> (owner, args) -> cons.apply(new Object[]{owner, args})));
+            }
+        }
+    }
+
+    public static class InfoMessage extends SimpleMessage {
+        public static final Audio.CS sfx = Audio.fromres(Resource.local().loadwait("sfx/msg"));
+
+        public InfoMessage(String msg) {super(msg);}
+
+        public InfoMessage(String msg, Color color, Audio.CS sfx) {super(msg, color, sfx);}
+
+        @Override
+        protected Audio.CS defsfx() {return (sfx);}
+    }
+
+    public static class SimpleMessage implements Notice {
+        public static final Audio.CS nosfx = (b, l) -> -1;
+        public String msg;
+        public Color color;
+        public Audio.CS sfx;
+
+        public SimpleMessage(String msg, Color color, Audio.CS sfx) {
+            this.msg = msg;
+            this.color = color;
+            this.sfx = sfx;
+        }
+
+        public SimpleMessage(String msg) {
+            this(msg, null, null);
+        }
+
+        @Override
+        public String message() {return (msg);}
+
+        @Override
+        public Color color() {return ((color == null) ? defcolor() : color);}
+
+        @Override
+        public Audio.CS sfx() {
+            if (sfx == null)
+                return (defsfx());
+            if (sfx == nosfx)
+                return (null);
+            return (sfx);
+        }
+
+        protected Color defcolor() {return (Color.WHITE);}
+
+        protected Audio.CS defsfx() {return (null);}
     }
 
     public static double scale(double v) {

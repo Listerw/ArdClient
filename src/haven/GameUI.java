@@ -28,7 +28,6 @@ package haven;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import haven.automation.Discord;
 import haven.automation.ErrorSysMsgCallback;
 import haven.automation.PickForageable;
@@ -191,7 +190,7 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
     public ForageWizardWnd forageWzrWnd;
     public SkillnCredoWnd scwnd;
     public LivestockManager lm;
-    public long inspectedgobid = 0;//used for attaching inspected qualities to gobs.
+    //public long inspectedgobid = 0;//used for attaching inspected qualities to gobs.
 
 
     public static abstract class BeltSlot {
@@ -2343,6 +2342,7 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
             new Object() {
                 Coord itemsz = UI.scale(180, 20);
                 final JsonElement element = configuration.customTiles;
+
                 Widget addNew(String name, WidgetList<Widget> list) {
                     Widget item = new Widget(itemsz);
                     WidgetVerticalAppender itemwva = new WidgetVerticalAppender(item);
@@ -2353,6 +2353,7 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
                     }));
                     return (item);
                 }
+
                 Widget loadWidget(String name, JsonObject obj, WidgetList<Widget> list) {
                     Widget item = new Widget(itemsz);
                     WidgetVerticalAppender itemwva = new WidgetVerticalAppender(item);
@@ -2363,6 +2364,7 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
                     }));
                     return (item);
                 }
+
                 List<Widget> load(WidgetList<Widget> list) {
                     JsonObject obj;
                     synchronized (element) {
@@ -2370,6 +2372,7 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
                     }
                     return (obj.keySet().stream().map(item -> loadWidget(item, obj.get(item).getAsJsonObject(), list)).collect(Collectors.toList()));
                 }
+
                 void createNew(String name) {
                     JsonObject obj = new JsonObject();
                     obj.addProperty("a", false);
@@ -2379,6 +2382,7 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
                         save();
                     }
                 }
+
                 JsonObject object(String item) {
                     synchronized (element) {
                         JsonElement itemEl = element.getAsJsonObject().get(item);
@@ -2388,11 +2392,13 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
                         return (null);
                     }
                 }
+
                 void save() {
                     synchronized (element) {
                         Utils.saveCustomElement(element, "CustomColorTiles");
                     }
                 }
+
                 void remove(String item) {
                     JsonElement itemEl = object(item);
                     if (itemEl != null) {
@@ -2401,6 +2407,7 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
                         invalidate();
                     }
                 }
+
                 void edit(String item, boolean a) {
                     boolean yes = false;
                     synchronized (element) {
@@ -2417,6 +2424,7 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
                     }
                     if (yes) invalidate();
                 }
+
                 void edit(String item, Color c) {
                     boolean yes = false;
                     synchronized (element) {
@@ -2434,11 +2442,13 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
                     }
                     if (yes) invalidate();
                 }
+
                 void invalidate() {
                     if (ui.sess != null) {
                         ui.sess.glob.map.invalidateAll();
                     }
                 }
+
                 {
                     Window w = new Window(Coord.z, "Tiles Highlighting Configure");
                     WidgetVerticalAppender wva = new WidgetVerticalAppender(w);
@@ -2717,22 +2727,11 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
         resize(parent.sz);
     }
 
-    public void msg(String msg, Color color, Color logcol) {
+    public void msg(String msg, Color color, Color logcol, Audio.CS sfx) {
         msgtime = Utils.rtime();
         if (Config.temporaryswimming && msg.equals("Swimming is now turned on.")) { //grab it here before we localize the message
             temporarilyswimming = true;
             SwimTimer = System.currentTimeMillis();
-        }
-        if (msg.startsWith("Quality:") && inspectedgobid != 0) {
-            Gob gob = ui.sess.glob.oc.getgob(inspectedgobid);
-            if (gob != null) {
-                try {
-                    ui.sess.glob.oc.quality(gob, Integer.valueOf(msg.substring(8).trim()));
-                    inspectedgobid = 0;
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         if (Config.temporaryswimming && temporarilyswimming && msg.equals("Swimming is now turned off.")) {//swimming manually toggled back off before the auto-off trigger fired, reset the auto-toggle flags.
             temporarilyswimming = false;
@@ -2742,7 +2741,11 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
         lastmsg = msgfoundry.render(msg, color);
         syslog.append(msg, logcol);
         if (color == Color.WHITE)
-            Audio.play(msgsfx);
+            Audio.play(sfx);
+    }
+
+    public void msg(String msg, Color color, Color logcol) {
+        msg(msg, color, logcol, (color == Color.WHITE) ? Audio.fromres(msgsfx) : UI.InfoMessage.nosfx);
     }
 
     public void msg(String msg, Color color) {
@@ -2813,6 +2816,11 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
             togglebuff(msg, Bufflist.partyperm);
         }
         msg(msg, Color.WHITE, Color.WHITE);
+    }
+
+    @Override
+    public void msg(UI.Notice msg) {
+        msg(msg.message(), msg.color(), msg.color(), msg.sfx());
     }
 
     public void act(String... args) {

@@ -1754,4 +1754,10 @@ public class Widget {
             }
         }
     }
+
+    public static final OwnerContext.ClassResolver<Widget> wdgctx = new OwnerContext.ClassResolver<Widget>()
+            .add(Widget.class, wdg -> wdg)
+            .add(UI.class, wdg -> wdg.ui)
+            .add(Glob.class, wdg -> wdg.ui.sess.glob)
+            .add(Session.class, wdg -> wdg.ui.sess);
 }

@@ -5,11 +5,19 @@ import haven.Coord2d;
 import haven.GameUI;
 import haven.Gob;
 import haven.GobIcon;
+import haven.Indir;
 import haven.MCache;
 import haven.MapView;
 import haven.Resource;
+import haven.RichText;
+import haven.Tex;
+import haven.TexI;
 import haven.UI;
+import haven.Utils;
 import haven.Widget;
+
+import java.util.Collections;
+import java.util.List;
 
 public class LocalInspect extends Widget {
     public MapView mv;
@@ -28,6 +36,45 @@ public class LocalInspect extends Widget {
 
     public void destroy() {
         super.destroy();
+    }
+
+    public static class ObTip implements Indir<Tex> {
+        public final String name;
+        public final List<String> lines;
+
+        public ObTip(String name, List<String> lines) {
+            this.name = name;
+            this.lines = lines;
+        }
+
+        public boolean equals(ObTip that) {
+            return (Utils.eq(this.name, that.name) && Utils.eq(this.lines, that.lines));
+        }
+
+        public boolean equals(Object x) {
+            return ((x instanceof ObTip) && equals((ObTip) x));
+        }
+
+        private Tex tex;
+        private boolean r = false;
+
+        public Tex get() {
+            if (!r) {
+                StringBuilder buf = new StringBuilder();
+                if (name != null)
+                    buf.append(RichText.Parser.quote(name));
+                if (!lines.isEmpty()) {
+                    if (buf.length() > 0)
+                        buf.append("\n\n");
+                    for (String ln : lines)
+                        buf.append(RichText.Parser.quote(ln) + "\n");
+                }
+                if (buf.length() > 0)
+                    tex = new TexI(RichText.render(buf.toString(), 0).img);
+                r = true;
+            }
+            return (tex);
+        }
     }
 
     public class Hover extends MapView.Hittest {
@@ -62,12 +109,15 @@ public class LocalInspect extends Widget {
 
         public Object tip() {
             if (ob != null) {
+                String name = null;
                 GobIcon icon = ob.getattr(GobIcon.class);
                 if (icon != null) {
-                    Resource.Tooltip name = icon.res.get().layer(Resource.tooltip);
-                    if (name != null)
-                        return (name.t);
+                    Resource.Tooltip otip = icon.res.get().layer(Resource.tooltip);
+                    if (otip != null)
+                        name = otip.t;
                 }
+                SavedInfo cell = ob.getattr(SavedInfo.class);
+                return (new ObTip(name, (cell == null) ? Collections.emptyList() : cell.lines));
             }
             if (mc != null) {
                 int tid = ui.sess.glob.map.gettile(mc.floor(MCache.tilesz));

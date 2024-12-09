@@ -2832,10 +2832,10 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
                     }
                 } else {
                     Gob gob = inf.gob;
-                    if (gob != null && !ui.modctrl && !ui.modshift && !ui.modmeta && clickb == 1 && curs != null && curs.name.equals("gfx/hud/curs/study")) {
-                        //we're inspecting an object, prepared to intercept the system message.
-                        ui.gui.inspectedgobid = gob.id;
-                    }
+                    //if (gob != null && !ui.modctrl && !ui.modshift && !ui.modmeta && clickb == 1 && curs != null && curs.name.equals("gfx/hud/curs/study")) {
+                    //we're inspecting an object, prepared to intercept the system message.
+                    //ui.gui.inspectedgobid = gob.id;
+                    //}
                     if (gob != null && gob.type == Type.TAMEDANIMAL && flags == UI.MOD_CTRL && clickb == 1 && Config.shooanimals) {
                         Resource res = gob.getres();
                         if (res != null && (res.name.startsWith("gfx/kritter/horse") ||
