@@ -9,6 +9,7 @@ import haven.Loading;
 import haven.Resource;
 import haven.Tex;
 import haven.UI;
+import haven.UID;
 import haven.Utils;
 import haven.Widget;
 
@@ -90,7 +91,7 @@ public class Entry extends Widget {
     public boolean mousedown(Coord c, int button) {
         if (super.mousedown(c, button))
             return (true);
-        getparent(CattleRoster.class).wdgmsg("click", id, button, ui.modflags(), ui.mc);
+        getparent(CattleRoster.class).wdgmsg("click", UID.of(id), button, ui.modflags(), ui.mc);
         return (true);
     }
 
