@@ -2728,6 +2728,33 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
     }
 
     public void msg(String msg, Color color, Color logcol, Audio.CS sfx) {
+        /*if (msg.startsWith(charterMsg)) //TravelWnd
+            CharterList.addCharter(msg.substring(charterMsg.length(), msg.length() - 2));*/
+        if (msg.startsWith("Swimming is now turned")) {
+            togglebuff(msg, Bufflist.buffswim);
+            if (swimautotgld) {
+                //msgnosfx(msg);
+                swimautotgld = false;
+                //return;
+            }
+        } else if (msg.startsWith("Tracking is now turned")) {
+            togglebuff(msg, Bufflist.bufftrack);
+            if (trackautotgld) {
+                //msgnosfx(msg);
+                trackautotgld = false;
+                //return;
+            }
+        } else if (msg.startsWith("Criminal acts are now turned")) {
+            togglebuff(msg, Bufflist.buffcrime);
+            if (crimeautotgld) {
+                //msgnosfx(msg);
+                crimeautotgld = false;
+                //return;
+            }
+        } else if (msg.startsWith("Party permissions are now")) {
+            togglebuff(msg, Bufflist.partyperm);
+        }
+
         msgtime = Utils.rtime();
         if (Config.temporaryswimming && msg.equals("Swimming is now turned on.")) { //grab it here before we localize the message
             temporarilyswimming = true;
@@ -2789,32 +2816,6 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
 
     @Override
     public void msg(String msg) {
-        /*if (msg.startsWith(charterMsg)) //TravelWnd
-            CharterList.addCharter(msg.substring(charterMsg.length(), msg.length() - 2));*/
-        if (msg.startsWith("Swimming is now turned")) {
-            togglebuff(msg, Bufflist.buffswim);
-            if (swimautotgld) {
-                msgnosfx(msg);
-                swimautotgld = false;
-                return;
-            }
-        } else if (msg.startsWith("Tracking is now turned")) {
-            togglebuff(msg, Bufflist.bufftrack);
-            if (trackautotgld) {
-                msgnosfx(msg);
-                trackautotgld = false;
-                return;
-            }
-        } else if (msg.startsWith("Criminal acts are now turned")) {
-            togglebuff(msg, Bufflist.buffcrime);
-            if (crimeautotgld) {
-                msgnosfx(msg);
-                crimeautotgld = false;
-                return;
-            }
-        } else if (msg.startsWith("Party permissions are now")) {
-            togglebuff(msg, Bufflist.partyperm);
-        }
         msg(msg, Color.WHITE, Color.WHITE);
     }
 
