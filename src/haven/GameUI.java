@@ -2740,7 +2740,7 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
         msg = Resource.getLocString(Resource.BUNDLE_MSG, msg);
         lastmsg = msgfoundry.render(msg, color);
         syslog.append(msg, logcol);
-        if (color == Color.WHITE)
+        if (sfx != null && color == Color.WHITE)
             Audio.play(sfx);
     }
 

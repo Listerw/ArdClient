@@ -76,7 +76,7 @@ public class dev {
 
             System.err.println(sb.toString());
         }
-        Debug.println(e);
+        //Debug.println(e);
     }
 
     public static void simpleLog(String s, Throwable e) {
