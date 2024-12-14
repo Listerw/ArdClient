@@ -573,7 +573,7 @@ public class WItem extends Widget implements DTarget2 {
     public Coord size() {
         GSprite spr = item.spr();
         if (spr != null) {
-            return spr.sz().div(UI.getScale()).div(30);
+            return spr.sz().div(UI.scale(30));
         } else {
             return new Coord(0, 0);
         }
