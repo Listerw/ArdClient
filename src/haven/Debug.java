@@ -26,6 +26,8 @@
 
 package haven;
 
+import modification.configuration;
+
 import javax.media.opengl.GL4bc;
 import javax.media.opengl.TraceGL4bc;
 import java.awt.image.BufferedImage;
@@ -63,15 +65,15 @@ public class Debug {
     }
 
     public static void println(String str) {
-        logs.forEach(l -> l.println(str));
+        configuration.executor.execute(() -> logs.forEach(l -> l.println(str)));
     }
 
     public static void printf(String format, Object args) {
-        logs.forEach(l -> l.printf(format, args));
+        configuration.executor.execute(() -> logs.forEach(l -> l.printf(format, args)));
     }
 
     public static void printStackTrace(Throwable e) {
-        logs.forEach(e::printStackTrace);
+        configuration.executor.execute(() -> logs.forEach(e::printStackTrace));
     }
 
     public static void cycle(int modflags) {
