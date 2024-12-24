@@ -1099,7 +1099,7 @@ public class GItem extends AWidget implements ItemInfo.SpriteOwner, GSprite.Owne
     public Coord size() {
         GSprite spr = spr();
         if (spr != null) {
-            return spr.sz().div(30);
+            return spr.sz().div(UI.scale(30));
         } else {
             return new Coord(0, 0);
         }
