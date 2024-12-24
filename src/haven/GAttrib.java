@@ -26,6 +26,8 @@
 
 package haven;
 
+import modification.dev;
+
 import java.util.function.Function;
 
 public abstract class GAttrib {
@@ -54,8 +56,14 @@ public abstract class GAttrib {
                         parse.apply(new Object[]{gob, sdt});
                     }
                 });
-            } catch (NoSuchMethodException e) {}
-            return (null);
+            } catch (NoClassDefFoundError | NoSuchMethodException e) {
+                return (new Parser() {
+                    public void apply(Gob gob, Message sdt) {
+                        dev.simpleLog(gob + " " + sdt, e);
+                    }
+                });
+            }
+            //return (null);
         }
     }
 
