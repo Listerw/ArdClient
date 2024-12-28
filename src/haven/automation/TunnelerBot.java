@@ -518,7 +518,7 @@ public class TunnelerBot extends Window implements Runnable {
         debug("tilesToMine " + tilesToMine);
         if (tilesToMine > 0) {
             AUtils.clickUiButton("paginae/act/mine", gui);
-            if (!((PBotGobAPI.player(ui).getPoses().contains("pickan") || PBotGobAPI.player(ui).getPoses().contains("choppan")) || PBotGobAPI.player(ui).getPoses().contains("drinkan"))) {
+            if (!((PBotGobAPI.player(ui).getPoses().contains("gfx/borka/pickan") || PBotGobAPI.player(ui).getPoses().contains("gfx/borka/choppan")) || PBotGobAPI.player(ui).getPoses().contains("gfx/borka/drinkan"))) {
                 gui.map.wdgmsg("sel", place.floor(MCache.tilesz), place.add(end).floor(MCache.tilesz), 0);
             }
             sleep(500);
