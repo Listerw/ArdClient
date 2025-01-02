@@ -591,7 +591,6 @@ public class Audio {
                 return new Audio.VolAdjust(clip.stream(), Config.sfxwhipvol);
 
             try {
-
                 if (res.name.equals("sfx/lvlup") || res.name.equals("sfx/msg")) {
                     Date thislvlup = new Date();
                     if (lastlvlup != null) {
@@ -604,15 +603,15 @@ public class Audio {
                 }
             } catch (NoClassDefFoundError q) {
             }
-            return (clip.stream());
+            CS ret = clip.stream();
+            if (Config.sfxdingvol != 1.0 && res.name.equals("sfx/msg"))
+                ret = new Audio.VolAdjust(ret, Config.sfxdingvol);
+            return (ret);
         }
     }
 
     private static void playUnqueued(Resource res) {
-        if (res.name.equals("sfx/msg"))
-            play(res, Config.sfxdingvol);
-        else
-            play(fromres(res));
+        play(fromres(res));
     }
 
     public static void play(Resource res) {
