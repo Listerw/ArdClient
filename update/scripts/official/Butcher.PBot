@@ -103,15 +103,7 @@ const btnClick = () => {
 			    continue;
 			}
 
-			if(waitingMenu("Skin")) {
-				if (shouldStop()) break;
-				infoLabel.setText("Skin " + ba + " animal");
-			}
-			if (!gob.pfClick(3, 0)) {
-			    PBotUtils.sysMsg(ui, "Didn't find path!");
-			    continue;
-			}
-			if(waitingMenu("Scale")) {
+			if(waitingMenu("Skin") || waitingMenu("Scale")) {
 				if (shouldStop()) break;
 				infoLabel.setText("Skin " + ba + " animal");
 			}
