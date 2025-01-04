@@ -109,7 +109,7 @@ public class PBotItem {
     }
 
     public Coord coord() {
-        return (witem.c.div(33));
+        return (witem.c.div(UI.scale(33)));
     }
 
     /**
