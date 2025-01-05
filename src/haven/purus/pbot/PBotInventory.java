@@ -319,7 +319,7 @@ public class PBotInventory {
         int cycles = 0;
         int sleeptime = 25;
         inv.wdgmsg("drop", coord);
-        while (PBotUtils.getItemAtHand(ui) == null) {
+        while (PBotUtils.getItemAtHand(ui) != null) {
             if (cycles == limit) {
                 return (false);
             } else {
