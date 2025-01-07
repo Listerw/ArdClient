@@ -1677,38 +1677,15 @@ public class AreaPicker extends Window implements Runnable {
     public Window waitForNewInvWindow(final List<Window> ows) throws InterruptedException {//FIXME stockpile and barrel
         debugLog("inventory window opening waiting...", Color.WHITE);
         for (int i = 0, sleep = 10; i < waitingtime; i += sleep) {
-            final List<Window> iwnds = invWindows();
-            if (ows.size() < iwnds.size()) {
-                for (Window iw : iwnds) {
-                    boolean eq = false;
-                    for (Window ow : ows)
-                        if (iw.equals(ow)) {
-                            eq = true;
-                            break;
-                        }
-                    if (!eq) {
-                        debugLog("inventory window opened", Color.WHITE);
-                        return (iw);
-                    }
+            for (Window iw : invWindows()) {
+                if (ows.stream().noneMatch(iw::equals)) {
+                    debugLog("inventory window opened", Color.WHITE);
+                    return (iw);
                 }
-            } else {
-                sleep(sleep);
             }
+            sleep(sleep);
         }
 
-        for (Window iw : invWindows()) {
-            boolean eq = false;
-            for (Window ow : ows)
-                if (iw.equals(ow)) {
-                    eq = true;
-                    break;
-                }
-            if (!eq) {
-                debugLog("inventory window opened", Color.WHITE);
-                return (iw);
-            }
-        }
-        
         debugLog("inventory window didn't open", Color.WHITE);
         return (null);
     }
