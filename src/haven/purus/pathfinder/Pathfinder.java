@@ -370,7 +370,7 @@ public class Pathfinder extends Thread {
                             }
                         }
                     }
-                    if (toHere[destTile.x][destTile.y] == null) { // A route does not exist!
+                    if (destTile.x < 0 || destTile.y < 0 || toHere[destTile.x][destTile.y] == null) { // A route does not exist!
                         synchronized (gui.map) {
                             gui.map.foundPath = false;
                         }
