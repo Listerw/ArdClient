@@ -1695,6 +1695,20 @@ public class AreaPicker extends Window implements Runnable {
                 sleep(sleep);
             }
         }
+
+        for (Window iw : invWindows()) {
+            boolean eq = false;
+            for (Window ow : ows)
+                if (iw.equals(ow)) {
+                    eq = true;
+                    break;
+                }
+            if (!eq) {
+                debugLog("inventory window opened", Color.WHITE);
+                return (iw);
+            }
+        }
+        
         debugLog("inventory window didn't open", Color.WHITE);
         return (null);
     }
