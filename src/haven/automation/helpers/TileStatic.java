@@ -6,7 +6,7 @@ public class TileStatic {
     public static final Set<String> SUPPORT_MATERIALS = new HashSet<>(Arrays.asList(
             "alabaster", "apatite", "arkose", "basalt", "blackcoal", "breccia", "cassiterite", "chalcopyrite", "chert",
             "cinnabar", "cuprite", "diabase", "diorite", "dolomite", "eclogite", "feldspar", "fluorospar", "flint", "galena", "gabbro", "gneiss", "granite", "graywacke",
-            "greenschist", "hornblende", "ilmenite", "jasper", "korund", "kyanite", "limestone", "malachite", "marble",
+            "greenschist", "hornblende", "ilmenite", "jasper", "korund", "kyanite", "leadglance", "limestone", "malachite", "marble",
             "mica", "microlite", "olivine", "orthoclase", "peacockore", "pegmatite", "porphyry", "pumice", "quartz",
             "rhyolite", "sandstone", "schist", "slate", "serpentine", "slate", "sodalite", "soapstone", "stone", "sunstone", "wineglance", "zincspar"
     ));

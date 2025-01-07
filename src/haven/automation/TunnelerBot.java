@@ -8,14 +8,12 @@ import haven.FlowerMenu;
 import haven.GameUI;
 import haven.Gob;
 import haven.Label;
-import haven.Loading;
 import haven.MCache;
 import haven.RichText;
 import haven.UI;
 import haven.Widget;
 import haven.Window;
 import haven.automation.helpers.TileStatic;
-import haven.purus.pbot.PBotGob;
 import haven.purus.pbot.PBotGobAPI;
 import haven.purus.pbot.PBotItem;
 import haven.purus.pbot.PBotUtils;
@@ -374,12 +372,11 @@ public class TunnelerBot extends Window implements Runnable {
         List<Gob> constructions = PBotGobAPI.findObjectsByNames(gui.ui, "gfx/terobjs/consobj").stream().map(p -> p.gob).collect(Collectors.toList());
         try {
             constructions.sort((gob1, gob2) -> (int) (gob1.rc.dist(gui.map.player().rc) - gob2.rc.dist(gui.map.player().rc)));
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
+
         if (!TileStatic.MINE_WALKABLE_TILES.contains(AUtils.getTileName(columnCoord.add(columnOffset), map))) {
             debug("mine for construction");
             pfL(columnCoord);
-
             AUtils.clickUiButton("paginae/act/mine", gui);
             gui.map.wdgmsg("sel", columnCoord.add(columnOffset).floor(MCache.tilesz), columnCoord.add(columnOffset).floor(MCache.tilesz), 0);
             int timeout = 0;
@@ -387,7 +384,7 @@ public class TunnelerBot extends Window implements Runnable {
                 timeout++;
                 sleep(100);
             }
-        } else if (!hasRocksInInv(15)) {
+        } else if (!hasRocksInInv(30)) {
             findRocks();
         } else if (!constructions.isEmpty()) {
             debug("continue construction");
@@ -396,6 +393,14 @@ public class TunnelerBot extends Window implements Runnable {
                 Gob closeConstr = constructions.get(0);
                 gui.map.wdgmsg("click", Coord.z, closeConstr.rc.floor(posres), 3, 0, 0, (int) closeConstr.id, closeConstr.rc.floor(posres), 0, -1);
                 sleep(1000);
+
+                // Check if window interrupted
+                int attempts = 0;
+                while (!AUtils.hasWnd("Stone Column", gui) && attempts < 5) {
+                    sleep(3000);
+                    gui.map.wdgmsg("click", Coord.z, closeConstr.rc.floor(posres), 3, 0, 0, (int) closeConstr.id, closeConstr.rc.floor(posres), 0, -1);
+                    attempts++;
+                }
             }
             AUtils.activateSign("Stone Column", gui);
             waitBuildingConstruction("gfx/terobjs/column");
@@ -404,10 +409,7 @@ public class TunnelerBot extends Window implements Runnable {
             pfL(columnCoord);
             AUtils.clickUiButton("paginae/bld/column", gui);
             sleep(300);
-            Coord2d buildPos = new Coord2d(columnCoord.add(columnOffset).x, columnCoord.add(columnOffset).y);
-            buildPos = buildPos
-                    .sub(buildPos.x % MCache.tilesz.x, buildPos.y % MCache.tilesz.y)
-                    .add(MCache.tilesz.x / 2, MCache.tilesz.y / 2).sub(MCache.tilesz);
+            Coord2d buildPos = columnCoord.add(columnOffset).floord(MCache.tilesz).mul(MCache.tilesz).add(MCache.tilesz.div(2));
             gui.map.wdgmsg("place", buildPos.floor(posres), 0, 1, 0);
             sleep(1000);
             AUtils.activateSign("Stone Column", gui);
@@ -417,11 +419,55 @@ public class TunnelerBot extends Window implements Runnable {
 
     private void waitBuildingConstruction(String name) throws InterruptedException {
         debug("waitBuildingConstruction " + name);
+        boolean constructionComplete = false;
         int timeout = 0;
-        while (timeout < 10 && hasRocksInInv(0) && !checkIfConstructed(name)) {
-            sleep(200);
+        int previousRockCount = -1;
+        int stuckCounter = 0;
+
+        while (timeout < 50 && !constructionComplete) {
+            int currentRocks = getStoneCount();  // Get current stone count
+            if (!hasRocksInInv(0)) {
+                debug("Out of rocks during construction");
+                gui.map.wdgmsg("click", Coord.z, gui.map.player().rc.floor(posres), 3, 0);
+                sleep(1000);
+                return;
+            }
+
+            // Check if stones are actually being used
+            if (currentRocks == previousRockCount) {
+                stuckCounter++;
+                if (stuckCounter > 5) {  // If stuck for too long, close window and retry
+                    debug("Construction appears stuck, closing window");
+                    gui.map.wdgmsg("click", Coord.z, gui.map.player().rc.floor(posres), 3, 0);
+                    sleep(1000);
+                    return;
+                }
+            } else {
+                stuckCounter = 0;
+            }
+
+            previousRockCount = currentRocks;
+
+            if (checkIfConstructed(name)) {
+                constructionComplete = true;
+            }
+
+            sleep(1000);  // Longer sleep to allow construction to progress
             timeout++;
         }
+
+        gui.map.wdgmsg("click", Coord.z, gui.map.player().rc.floor(posres), 3, 0);
+        sleep(1000);
+    }
+
+    private int getStoneCount() {
+        int count = 0;
+        for (PBotItem wItem : PBotUtils.playerInventory(ui).getInventoryContentsDontStack()) {
+            if (TileStatic.SUPPORT_MATERIALS.contains(wItem.gitem.getres().basename())) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private boolean checkIfConstructed(String name) {
@@ -434,33 +480,90 @@ public class TunnelerBot extends Window implements Runnable {
         debug("finding rocks");
         List<Gob> gobs = AUtils.getAllGobs(gui);
         Coord2d playerC = gui.map.player().rc;
+        Coord2d crossSectionCenter = currentAnchorColumn;  // Center point reference
+        Coord2d supportTile = currentAnchorColumn.add(direction.mul(11).mul(10)).add(directionPerpendicular.inv().mul(11));
+
         try {
             gobs.sort(Comparator.comparingDouble(gob -> gob.rc.dist(playerC)));
-        } catch (Exception e) {
-            //Illegal argument exception wtf?
+        } catch (Exception e) {}
+
+        debug("pathing to cross section at " + crossSectionCenter);
+        // Path to cross-section first, but only try once
+        if (!pathAndWait(crossSectionCenter)) {
+            debug("failed to path to cross section");
+            return;
         }
+        sleep(1000);  // Wait a bit after reaching cross-section
+
+        // Try stones near main line first
+        debug("searching for rocks in main line area");
+        if (tryRocksInRange(gobs, crossSectionCenter, 44)) {
+            debug("found rocks in main line, returning via cross-section");
+            sleep(500);
+            pathAndWait(crossSectionCenter);
+            sleep(500);
+            pathAndWait(supportTile);
+            return;
+        }
+
+        // Check side areas if main line had no rocks
+        debug("searching for rocks in side areas");
+        if (tryRocksInRange(gobs, crossSectionCenter, 132)) {
+            debug("found rocks in side area, returning via cross-section");
+            sleep(500);
+            pathAndWait(crossSectionCenter);
+            sleep(500);
+            pathAndWait(supportTile);
+            return;
+        }
+
+        debug("no rocks found in range, returning to support");
+        // If no rocks found, return to support tile
+        pathAndWait(crossSectionCenter);
+        sleep(500);
+        pathAndWait(supportTile);
+    }
+
+    private boolean tryRocksInRange(List<Gob> gobs, Coord2d position, double range) throws InterruptedException {
+        List<Gob> rocksInRange = new ArrayList<>();
+
+        // Pre-filter valid rocks
         for (Gob gob : gobs) {
             if (TileStatic.SUPPORT_MATERIALS.contains(gob.getres().basename())) {
                 Coord2d tc = new Coord2d(gob.rc.floor(MCache.tilesz)).mul(MCache.tilesz).add(MCache.tilesz.div(2, 2));
-                debug("pf " + gob.getres());
-                pfL(tc);
-                sleep(100);
-
-                debug("collect " + gob.getres());
-                gui.map.wdgmsg("click", Coord.z, gob.rc.floor(posres), 3, 1, 0, (int) gob.id, gob.rc.floor(posres), 0, -1);
-                sleep(2000);
-                return;
-            }
-        }
-
-        for (PBotItem wItem : PBotUtils.playerInventory(ui).getInventoryContents()) {
-            try {
-                if (TileStatic.SUPPORT_MATERIALS.contains(wItem.gitem.getres().basename())) {
-                    //do something with rock
+                if (position.dist(tc) < range) {
+                    rocksInRange.add(gob);
                 }
-            } catch (Loading e) {
             }
         }
+
+        rocksInRange.sort((a, b) -> (int)(position.dist(a.rc) - position.dist(b.rc)));
+
+        for (Gob gob : rocksInRange) {
+            Coord2d tc = new Coord2d(gob.rc.floor(MCache.tilesz)).mul(MCache.tilesz).add(MCache.tilesz.div(2, 2));
+            debug("attempting to collect rock at " + tc);
+
+            // Verify rock still exists before attempting collection
+            if (gob.getres() == null || !TileStatic.SUPPORT_MATERIALS.contains(gob.getres().basename())) {
+                debug("rock no longer exists, skipping");
+                continue;
+            }
+
+            if (pathAndWait(tc)) {
+                if (gui.map.player().rc.dist(tc) < 11) {
+                    debug("collecting rock");
+                    gui.map.wdgmsg("click", Coord.z, gob.rc.floor(posres), 3, 1, 0, (int) gob.id, gob.rc.floor(posres), 0, -1);
+                    sleep(3000);
+
+                    // Verify collection was successful
+                    if (hasRocksInInv(0)) {
+                        return true;
+                    }
+                }
+            }
+            sleep(1000);
+        }
+        return false;
     }
 
     private boolean hasRocksInInv(int num) {
@@ -492,7 +595,7 @@ public class TunnelerBot extends Window implements Runnable {
     }
 
     private boolean checkLineMined(Coord2d place, Coord dir, int length) {
-        debug("checkLineMined " + place + " " + dir + " " + length );
+        debug("checkLineMined " + place + " " + dir + " " + length);
         for (int i = 0; i <= length; i++) {
             Coord dirmul = dir.mul(11).mul(i);
             if (!TileStatic.MINE_WALKABLE_TILES.contains(AUtils.getTileName(place.add(dirmul), map))) {
@@ -521,7 +624,7 @@ public class TunnelerBot extends Window implements Runnable {
             if (!((PBotGobAPI.player(ui).getPoses().contains("gfx/borka/pickan") || PBotGobAPI.player(ui).getPoses().contains("gfx/borka/choppan")) || PBotGobAPI.player(ui).getPoses().contains("gfx/borka/drinkan"))) {
                 gui.map.wdgmsg("sel", place.floor(MCache.tilesz), place.add(end).floor(MCache.tilesz), 0);
             }
-            sleep(500);
+            sleep(4000);
             return false;
         } else {
             if (!last) {
@@ -659,8 +762,45 @@ public class TunnelerBot extends Window implements Runnable {
         gui.map.showSpecialMenu(c);
         debug("pf to " + c);
         PBotUtils.pfLeftClick(gui.ui, c.x, c.y);
-        sleep(100);
+        // Wait for pathfinding to initialize
+        sleep(500);
+
+        // Wait for movement to complete or timeout
+        int timeout = 0;
+        while (gui.map.player().getv() > 0 && timeout < 100) {
+            sleep(100);
+            timeout++;
+        }
+    }
+
+    private boolean waitForMovement() throws InterruptedException {
+        int timeout = 0;
+        while (gui.map.player().getv() > 0 && timeout < 50) {
+            sleep(100);
+            timeout++;
+        }
+        return timeout < 50;
+    }
+
+    private boolean pathAndWait(Coord2d target) throws InterruptedException {
+        int attempts = 0;
+        while (attempts < 3) {
+            try {
+                pfL(target);
+                int timeout = 0;
+                while (gui.map.player().getv() > 0 && timeout < 50) {
+                    sleep(100);
+                    timeout++;
+                }
+                if (gui.map.player().rc.dist(target) < 11) {
+                    return true;
+                }
+            } catch (Exception e) {
+                debug("pathfinding failed: " + e.getMessage());
+            }
+            attempts++;
+            sleep(1000);
+        }
+        return false;
     }
 }
-
-
