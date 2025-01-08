@@ -207,7 +207,7 @@ public class Hitbox {
 
             if (res.name.endsWith("/consobj")) {
                 ResDrawable rd = gob.getattr(ResDrawable.class);
-                if (rd != null && rd.sdt.rbuf.length >= 4) {
+                if (rd != null) {
                     MessageBuf buf = rd.sdt.clone();
                     Obstacle obst = Obstacle.parse(buf);
                     return (Arrays.stream(obst.p).map(p -> new Hitbox(p, true)).toArray(Hitbox[]::new));
