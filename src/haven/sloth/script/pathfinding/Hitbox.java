@@ -9,6 +9,7 @@ import haven.MessageBuf;
 import haven.RenderLink;
 import haven.ResDrawable;
 import haven.Resource;
+import haven.res.lib.obst.Obstacle;
 import haven.sloth.gob.Type;
 import haven.sloth.util.ResHashMap;
 
