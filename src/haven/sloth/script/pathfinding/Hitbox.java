@@ -9,6 +9,7 @@ import haven.MessageBuf;
 import haven.RenderLink;
 import haven.ResDrawable;
 import haven.Resource;
+import haven.res.lib.obst.Obstacle;
 import haven.sloth.gob.Type;
 import haven.sloth.util.ResHashMap;
 
@@ -208,7 +209,8 @@ public class Hitbox {
                 ResDrawable rd = gob.getattr(ResDrawable.class);
                 if (rd != null && rd.sdt.rbuf.length >= 4) {
                     MessageBuf buf = rd.sdt.clone();
-                    return (new Hitbox[]{new Hitbox(new Coord(buf.rbuf[0], buf.rbuf[1]), new Coord(buf.rbuf[2], buf.rbuf[3]))});
+                    Obstacle obst = Obstacle.parse(buf);
+                    return (Arrays.stream(obst.p).map(p -> new Hitbox(p, true)).toArray(Hitbox[]::new));
                 }
             }
 
