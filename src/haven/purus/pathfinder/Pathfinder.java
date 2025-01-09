@@ -194,8 +194,12 @@ public class Pathfinder extends Thread {
                     }
                 }
                 long start = System.currentTimeMillis();
+                Gob riddenGob = gui.map.player().findRiddenGob();
+
                 for (Gob gob : gui.ui.sess.glob.oc.getallgobs()) {
                     if (gob.isplayer())
+                        continue;
+                    if (riddenGob != null && riddenGob.id == gob.id)
                         continue;
                     Hitbox[] box = Hitbox.hbfor(gob);
                     if (box == null) continue;
