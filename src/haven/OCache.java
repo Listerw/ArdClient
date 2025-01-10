@@ -263,7 +263,7 @@ public class OCache implements Iterable<Gob> {
     }
 
     public synchronized Gob getgob(long id) {
-        for (final Gob g : this) {
+        for (final Gob g : getallgobs()) {
             if (g.id == id)
                 return (g);
         }

@@ -143,12 +143,12 @@ public class Loader {
 
         public boolean cancel() {
             boolean ret;
-            synchronized (runmon) {
+            //synchronized (runmon) {
                 synchronized (this) {
                     cancelled = true;
                     ret = !done;
                 }
-            }
+            //}
             Waiting wait;
             synchronized (queue) {
                 if ((wait = loading.remove(this)) != null)
