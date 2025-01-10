@@ -59,6 +59,11 @@ public class Homing extends Moving {
         return (v);
     }
 
+    @Override
+    public boolean isMoving() {
+        return (getv() > 0);
+    }
+
     public Optional<Coord2d> getDest() {
         Gob tgt = tgt();
         if (tgt != null) {

@@ -45,6 +45,7 @@ public class Following extends Moving {
         this.tgt = tgt;
         this.xfres = xfres;
         this.xfname = xfname;
+        checkFollow();
     }
 
     public Coord3f getc() {
@@ -69,6 +70,11 @@ public class Following extends Moving {
         return (lastv);
     }
 
+    @Override
+    public boolean isMoving() {
+        return (getv() > 0);
+    }
+
     public Optional<Coord2d> getDest() {
         Gob tgt = tgt();
         if (tgt != null) {
@@ -83,18 +89,42 @@ public class Following extends Moving {
     }
 
     boolean helded = false;
+
     @Override
     public void ctick(int dt) {
         super.ctick(dt);
+        checkFollow();
+    }
+
+    public void checkFollow() {
         if (!helded) {
-            final Gob tgt = tgt();
-            if (tgt != null) {
-                final Holding holding = tgt.getattr(Holding.class);
-                if (holding == null || holding.held != gob) {
-                    tgt.setattr(new Holding(tgt, gob));
-                    gob.delayedsetattr(new HeldBy(gob, tgt), Gob::updateHitmap);
-                    helded = true;
-                }
+            final HeldBy held = gob.getattr(HeldBy.class);
+            if (held == null) {
+                gob.delayedsetattr(new HeldBy(gob, tgt), Gob::updateHitmap);
+                helded = true;
+            }
+        }
+        final Gob tgt = tgt();
+        if (tgt != null) {
+            final Holding holding = tgt.getattr(Holding.class);
+            if (holding == null || holding.held != gob.id) {
+                tgt.delayedsetattr(new Holding(tgt, gob.id), Gob::updateHitmap);
+            }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (helded) {
+            gob.delattr(HeldBy.class);
+            helded = false;
+        }
+        final Gob tgt = tgt();
+        if (tgt != null) {
+            final Holding holding = tgt.getattr(Holding.class);
+            if (holding != null) {
+                tgt.delattr(Holding.class);
             }
         }
     }

@@ -42,6 +42,9 @@ public abstract class Moving extends GAttrib {
 
     public abstract double getv();
 
+    //a method is required to check that the object is moving, even if this attribute is present
+    public abstract boolean isMoving();
+
     public Object staticp() {
         return (null);
     }

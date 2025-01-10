@@ -81,7 +81,7 @@ public abstract class Pathfinder {
     private boolean areWeBoating() {
         final Gob me = ui.sess.glob.oc.getgob(ui.gui.map.plgob);
         if (me != null) {
-            return me.getattr(HeldBy.class) != null && me.getattr(HeldBy.class).holder.type == Type.WATERVEHICLE;
+            return me.getattr(HeldBy.class) != null && me.getattr(HeldBy.class).tgt().type == Type.WATERVEHICLE;
         } else {
             return false;
         }

@@ -70,6 +70,11 @@ public class LinMove extends Moving {
         return (v.abs());
     }
 
+    @Override
+    public boolean isMoving() {
+        return (getv() > 0);
+    }
+
     public void ctick(int dt) {
         if (!ts) {
             t += (dt / 1000.0) * 0.9;

@@ -60,7 +60,6 @@ import modification.configuration;
 import modification.resources;
 
 import java.awt.Color;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -939,7 +938,7 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
             //don't want objects being held to be on the hitmap
             final UI ui = glob.ui.get();
             if (getattr(HeldBy.class) == null &&
-                    (getattr(Holding.class) == null || ui == null || getattr(Holding.class).held.id != ui.gui.map.plgob) &&
+                    (getattr(Holding.class) == null || ui == null || ui.gui == null || getattr(Holding.class).held != ui.gui.map.plgob) &&
                     !pathfinding_blackout) {
                 hitboxcoords = glob.gobhitmap.add(this);
             }
@@ -1031,12 +1030,11 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
         sb.append("staticp: ").append(staticp() != null ? "static" : "dynamic").append("\n");
         final Holding holding = getattr(Holding.class);
         if (holding != null) {
-            sb.append("Holding: ").append(holding.held.id).append(" - ").append(holding.held.resname().orElse("Unknown")).append("\n");
-        } else {
-            final HeldBy heldby = getattr(HeldBy.class);
-            if (heldby != null) {
-                sb.append("Held By: ").append(heldby.holder.id).append(" - ").append(heldby.holder.resname().orElse("Unknown")).append("\n");
-            }
+            sb.append("Holding: ").append(holding.held).append(" - ").append(holding.tgt().resname().orElse("Unknown")).append("\n");
+        }
+        final HeldBy heldby = getattr(HeldBy.class);
+        if (heldby != null) {
+            sb.append("Held By: ").append(heldby.holder).append(" - ").append(heldby.tgt().resname().orElse("Unknown")).append("\n");
         }
 //        sb.append(attr.entrySet()).append("\n");
         ResDrawable dw = getattr(ResDrawable.class);
@@ -1365,7 +1363,7 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
                 final UI ui = glob.ui.get();
                 if (discovered) {
                     if (getattr(HeldBy.class) == null &&
-                            (getattr(Holding.class) == null || ui == null || (ui.gui != null && ui.gui.map != null && getattr(Holding.class).held.id != ui.gui.map.plgob)) &&
+                            (getattr(Holding.class) == null || ui == null || (ui.gui != null && ui.gui.map != null && getattr(Holding.class).held != ui.gui.map.plgob)) &&
                             !pathfinding_blackout) {
                         hitboxcoords = glob.gobhitmap.add(this);
                     }
@@ -2309,23 +2307,38 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
 //        if (homing != null && homing.tgt() != null && homing.tgt().getattr(LinMove.class) != null)
 //            return (true);
 
-
+        Moving m = getattr(Moving.class);
+        return (m != null && m.isMoving());
         // when player is riding a horse, player is only moving if the ridden horse is also moving
-        if (getattr(Moving.class) != null) {
-            Gob riddenGob = findRiddenGob();
-            return riddenGob == null || riddenGob.isMoving();
-        }
-
-        return false;
+        //if (getattr(Moving.class) != null) {
+        //    Gob riddenGob = findRiddenGob();
+        //    return riddenGob == null || riddenGob.isMoving();
+        //}
     }
 
-    public Gob findRiddenGob() {
-        Following follow = getattr(Following.class);
+    public Gob findFollowingGob() {
+        HeldBy hb = getattr(HeldBy.class);
+        return (hb != null ? hb.tgt() : null);
+    }
+
+    public Gob findFollowedGob() {
+        Holding h = getattr(Holding.class);
+        return (h != null ? h.tgt() : null);
+    }
+
+    public Collection<Gob> findChainedGobs() {
+        /*Following follow = getattr(Following.class);
         if (follow == null || follow.tgt() == null || follow.tgt().rc.dist((rc)) >= 0.1) {
             return null;
         } else {
             return follow.tgt();
-        }
+        }*/
+        Set<Gob> set = new HashSet<>();
+        Gob hb = findFollowingGob();
+        if (hb != null) set.add(hb);
+        Gob h = findFollowedGob();
+        if (h != null) set.add(h);
+        return (set);
     }
 
     public LinMove getLinMove() {

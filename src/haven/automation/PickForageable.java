@@ -47,7 +47,7 @@ public class PickForageable implements Runnable {
             for (Gob gob : gui.map.glob.oc.getallgobs()) {
                 if (player == gob)
                     continue;
-                if (held != null && held.holder.id == gob.id)
+                if (held != null && held.holder == gob.id)
                     continue; //don't evaluate tamed horses
                 Resource res = null;
                 boolean gate = false;

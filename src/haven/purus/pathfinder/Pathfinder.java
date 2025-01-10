@@ -4,15 +4,12 @@ import haven.Coord;
 import haven.Coord2d;
 import haven.GameUI;
 import haven.Gob;
-import static haven.MCache.cmaps;
-import static haven.MCache.tilesz;
-import static haven.MCache.tilesz2;
-import static haven.OCache.posres;
 import haven.Resource;
 import haven.Tiler;
 import haven.resutil.TerrainTile;
 import haven.sloth.script.pathfinding.Hitbox;
 import modification.configuration;
+
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -24,10 +21,16 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+
+import static haven.MCache.cmaps;
+import static haven.MCache.tilesz;
+import static haven.MCache.tilesz2;
+import static haven.OCache.posres;
 
 public class Pathfinder extends Thread {
 
@@ -76,14 +79,43 @@ public class Pathfinder extends Thread {
 
     Set<String> inaccessibleTiles = new HashSet<String>() {{
         add("gfx/tiles/nil");
-        add("gfx/tiles/deep");
-        add("gfx/tiles/odeep");
-        add("gfx/tiles/odeeper");
         add("gfx/tiles/cave");
         add("gfx/tiles/rocks/.*");
     }};
 
+    Set<String> waterTiles = new HashSet<String>() {{
+        add("gfx/tiles/deep");
+        add("gfx/tiles/odeep");
+    }};
+
+    Set<String> water2Tiles = new HashSet<String>() {{
+        add("gfx/tiles/odeeper");
+    }};
+
+    Set<String> bogTiles = new HashSet<String>() {{
+        add("gfx/tiles/bog");
+        add("gfx/tiles/bogwater");
+        add("gfx/tiles/fen");
+        add("gfx/tiles/fenwater");
+        add("gfx/tiles/swamp");
+        add("gfx/tiles/swampwater");
+    }};
+
     Set<String> whitelistedGobs = new HashSet<>();
+
+    Set<String> boatGobs = new HashSet<String>() {{
+        add("gfx/terobjs/vehicle/dugout");
+        add("gfx/terobjs/vehicle/coracle");
+    }};
+
+    Set<String> boat1Gobs = new HashSet<String>() {{
+        add("gfx/terobjs/vehicle/rowboat");
+    }};
+
+    Set<String> boat2Gobs = new HashSet<String>() {{
+        add("gfx/terobjs/vehicle/snekkja");
+        add("gfx/terobjs/vehicle/knarr");
+    }};
 
     private Coord coordToTile(Coord2d c) {
         return c.floor(tilesz);
@@ -149,12 +181,89 @@ public class Pathfinder extends Thread {
                 if (origin.x < originmap.x) origin.x += tilesz.x;
                 if (origin.y < originmap.y) origin.y += tilesz.y;
 
+                Predicate<String> boatCheck = s -> {
+                    for (String act : boatGobs) {
+                        Pattern pattern = Pattern.compile(act);
+                        if (pattern.matcher(s).matches())
+                            return (true);
+                    }
+                    return (false);
+                };
+                Predicate<String> boat1Check = s -> {
+                    for (String act : boat1Gobs) {
+                        Pattern pattern = Pattern.compile(act);
+                        if (pattern.matcher(s).matches())
+                            return (true);
+                    }
+                    return (false);
+                };
+                Predicate<String> boat2Check = s -> {
+                    for (String act : boat2Gobs) {
+                        Pattern pattern = Pattern.compile(act);
+                        if (pattern.matcher(s).matches())
+                            return (true);
+                    }
+                    return (false);
+                };
+
+                //There are more than 1 objects, so it’s better to initially make a filter and add a simple check inside the loop
+                Set<Long> ignoreList = new HashSet<>();
+                Gob player = gui.map.player();
+                final boolean[] isOnBoat = {false, false, false};
+                if (player != null) {
+                    ignoreList.add(player.id);
+                    player.findChainedGobs().stream().distinct().filter(Objects::nonNull).map(cg -> cg.id).forEach(ignoreList::add);
+                    Gob heldBy = player.findFollowingGob();
+                    if (heldBy != null)
+                        heldBy.resname().ifPresent(nm -> {
+                            isOnBoat[0] = boatCheck.test(nm);
+                            isOnBoat[1] = boat1Check.test(nm);
+                            isOnBoat[2] = boat2Check.test(nm);
+                        });
+                }
+
                 Predicate<String> inaccess = s -> {
                     for (String act : inaccessibleTiles) {
                         Pattern pattern = Pattern.compile(act);
                         if (pattern.matcher(s).matches())
                             return (true);
                     }
+                    boolean bog = false;
+                    boolean deeper = false;
+                    boolean boat = false;
+                    if (isOnBoat[2]) {
+                        boat = true;
+                        deeper = true;
+                    } else if (isOnBoat[1]) {
+                        boat = true;
+                    } else if (isOnBoat[0]) {
+                        boat = true;
+                        bog = true;
+                    } else {
+                        bog = true;
+                    }
+                    if (!bog) {
+                        for (String act : bogTiles) {
+                            Pattern pattern = Pattern.compile(act);
+                            if (pattern.matcher(s).matches())
+                                return (true);
+                        }
+                    }
+                    if (!boat) {
+                        for (String act : waterTiles) {
+                            Pattern pattern = Pattern.compile(act);
+                            if (pattern.matcher(s).matches())
+                                return (true);
+                        }
+                    }
+                    if (!deeper) {
+                        for (String act : water2Tiles) {
+                            Pattern pattern = Pattern.compile(act);
+                            if (pattern.matcher(s).matches())
+                                return (true);
+                        }
+                    }
+
                     return (false);
                 };
 
@@ -193,13 +302,10 @@ public class Pathfinder extends Thread {
                         }
                     }
                 }
-                long start = System.currentTimeMillis();
-                Gob riddenGob = gui.map.player().findRiddenGob();
 
+                long start = System.currentTimeMillis();
                 for (Gob gob : gui.ui.sess.glob.oc.getallgobs()) {
-                    if (gob.isplayer())
-                        continue;
-                    if (riddenGob != null && riddenGob.id == gob.id)
+                    if (ignoreList.contains(gob.id))
                         continue;
                     Hitbox[] box = Hitbox.hbfor(gob);
                     if (box == null) continue;
@@ -392,13 +498,6 @@ public class Pathfinder extends Thread {
                         if (DEBUG)
                             g.fillRect((route[i].x) * 11, (route[i].y) * 11, 11, 11);
                     }
-                    if (DEBUG) {
-                        try {
-                            ImageIO.write(bMap, "png", new File(System.currentTimeMillis() + ".png"));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
 
                     System.out.println("Time taken for finding the route: " + (System.currentTimeMillis() - start));
                     synchronized (gui.map) {
@@ -436,6 +535,14 @@ public class Pathfinder extends Thread {
                         gui.map.pllastcc = destGob.rc;
                     }
                     //	gui.map.wdgmsg("click", gob.sc, mc, clickb, modflags, 0, (int) gob.id, gob.rc.floor(posres), 0, meshid);
+                }
+
+                if (DEBUG) {
+                    try {
+                        ImageIO.write(bMap, "png", new File(System.currentTimeMillis() + ".png"));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
