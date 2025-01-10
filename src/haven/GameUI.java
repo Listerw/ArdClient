@@ -2544,8 +2544,17 @@ public class GameUI extends ConsoleHost implements Console.Directory, UI.Message
 
 
     public void togglePathfinding() {
-        Config.pf = !Config.pf;
-        msg("Pathfinding is now turned " + (Config.pf ? "on" : "off"), Color.WHITE);
+        boolean p1 = Config.pf;
+        boolean p2 = Config.pf2;
+        if (p1) {
+            Config.pf = false;
+            Config.pf2 = true;
+        } else if (p2) {
+            Config.pf2 = false;
+        } else {
+            Config.pf = true;
+        }
+        msg("Pathfinding is now turned " + (Config.pf || Config.pf2 ? "on " : "off") + (Config.pf ? "purus" : (Config.pf2 ? "sloth" : "")), Color.WHITE);
     }
 
     public void aggroClosest() {

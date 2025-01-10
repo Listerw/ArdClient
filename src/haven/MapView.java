@@ -50,9 +50,7 @@ import haven.purus.pbot.PBotUtils;
 import haven.resutil.BPRadSprite;
 import haven.sloth.gob.Alerted;
 import haven.sloth.gob.Deleted;
-import haven.sloth.gob.HeldBy;
 import haven.sloth.gob.Hidden;
-import haven.sloth.gob.Holding;
 import haven.sloth.gob.Mark;
 import haven.sloth.gob.Type;
 import haven.sloth.gui.SoundSelector;
@@ -2095,14 +2093,11 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
     private boolean triggermove() {
         Gob pl = ui.sess.glob.oc.getgob(plgob);
         if (pl != null) {
-            Holding hd = pl.getattr(Holding.class);
+            Homing hd = pl.getattr(Homing.class);
             if (hd != null) {
-                Gob hg = ui.sess.glob.oc.getgob(hd.held.id);
+                Gob hg = hd.tgt();
                 if (hg != null) {
-                    HeldBy hb = hg.getattr(HeldBy.class);
-                    if (hb != null)
-                        if (ui.sess.glob.oc.getgob(hb.holder.id) == pl)
-                            pl = hg;
+                    pl = hg;
                 }
             }
             if (movingto != null && pl.getattr(Moving.class) != null) {
@@ -2129,14 +2124,11 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
     public boolean isfinishmovequeue() {
         Gob pl = PBotUtils.player(ui);
         if (pl != null) {
-            Holding hd = pl.getattr(Holding.class);
+            Homing hd = pl.getattr(Homing.class);
             if (hd != null) {
-                Gob hg = ui.sess.glob.oc.getgob(hd.held.id);
+                Gob hg = hd.tgt();
                 if (hg != null) {
-                    HeldBy hb = hg.getattr(HeldBy.class);
-                    if (hb != null)
-                        if (ui.sess.glob.oc.getgob(hb.holder.id) == pl)
-                            pl = hg;
+                    pl = hg;
                 }
             }
             if (!pl.isMoving()) {
@@ -2784,18 +2776,21 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 //                args = Utils.extend(args, gobargs);
 
                 if (inf == null) {
-                    if (Config.pf && clickb == 1 && curs != null && !curs.name.equals("gfx/hud/curs/study")) {
-                        /*if (pfdefer != null) {
-                            pfdefer.cancel();
-                            pfdefer = null;
-                        }*/
-                        /*pfdefer = glob.loader.defer(() -> {
-                            pathto(mc);
-                            pfdefer = null;
-                            return (null);
-                        });*/
-                        purusPfLeftClick(mc.floor(), null);
-                    } else if (clickb == 1 && ui.modmeta && ui.gui.vhand == null && curs != null && (curs.name.equals("gfx/hud/curs/arw") || curs.name.equals("gfx/hud/curs/dig") || curs.name.equals("gfx/hud/curs/whip"))) {
+                    if ((Config.pf || Config.pf2) && clickb == 1 && curs != null && !curs.name.equals("gfx/hud/curs/study")) {
+                        if (Config.pf)
+                            purusPfLeftClick(mc.floor(), null);
+                        else if (Config.pf2) {
+                            if (pfdefer != null) {
+                                pfdefer.cancel();
+                                pfdefer = null;
+                            }
+                            pfdefer = glob.loader.defer(() -> {
+                                pathto(mc);
+                                pfdefer = null;
+                                return (null);
+                            });
+                        }
+                    } else if (clickb == 1 && ui.modmeta && ui.gui.vhand == null && curs != null && (curs.name.equals("gfx/hud/curs/arw") || curs.name.equals("gfx/hud/curs/dig") || curs.name.equals("gfx/hud/curs/whip") || curs.name.equals("gfx/hud/curs/hand"))) {
                         //Queued movement
                         movequeue.add(mc);
                     } else {
@@ -2873,29 +2868,35 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
                                 }
                             }
                         }
-                    } else if (Config.pf && curs != null && !curs.name.equals("gfx/hud/curs/study") && gob != null) {
+                    } else if ((Config.pf || Config.pf2) && curs != null && !curs.name.equals("gfx/hud/curs/study") && gob != null) {
                         if (clickb == 3) {
-                            purusPfRightClick(gob, -1, 3, 0, null);
-                            /*if (pfdefer != null) {
-                                pfdefer.cancel();
-                                pfdefer = null;
+                            if (Config.pf) {
+                                purusPfRightClick(gob, -1, 3, 0, null);
+                            } else if (Config.pf2) {
+                                if (pfdefer != null) {
+                                    pfdefer.cancel();
+                                    pfdefer = null;
+                                }
+                                pfdefer = glob.loader.defer(() -> {
+                                    pathtoRightClick(gob, 0);
+                                    pfdefer = null;
+                                    return (null);
+                                });
                             }
-                            pfdefer = glob.loader.defer(() -> {
-                                pathtoRightClick(gob, 0);
-                                pfdefer = null;
-                                return (null);
-                            });*/
                         } else if (clickb == 1) {
-                            purusPfLeftClick(gob.rc, null);
-                            /*if (pfdefer != null) {
-                                pfdefer.cancel();
-                                pfdefer = null;
+                            if (Config.pf) {
+                                purusPfLeftClick(gob.rc, null);
+                            } else if (Config.pf2) {
+                                if (pfdefer != null) {
+                                    pfdefer.cancel();
+                                    pfdefer = null;
+                                }
+                                pfdefer = glob.loader.defer(() -> {
+                                    pathto(gob);
+                                    pfdefer = null;
+                                    return (null);
+                                });
                             }
-                            pfdefer = glob.loader.defer(() -> {
-                                pathto(gob);
-                                pfdefer = null;
-                                return (null);
-                            });*/
                         }
                     } else {
                         args = Utils.extend(args, gobargs);
@@ -3329,6 +3330,8 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
                     if (nodropping) {
                         // we really don't want dropping, so click is moving
                         if (Config.pf) {
+                            purusPfLeftClick(mc.floor(), null);
+                        } else if (Config.pf2) {
                             // purusPfLeftClick(mc.floor(), null);
                             if (pfdefer != null) {
                                 pfdefer.cancel();

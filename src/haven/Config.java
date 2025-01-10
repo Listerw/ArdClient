@@ -326,6 +326,7 @@ public class Config {
     public static boolean lockedmainmenu = Utils.getprefb("lockedmainmenu", true);
     public static boolean splitskills = Utils.getprefb("splitskills", true);
     public static boolean pf = false;
+    public static boolean pf2 = false;
     public static String playerposfile;
     public static Double uiscale = getfloat("haven.uiscale", null);
     public static byte[] authck = null;
