@@ -2309,7 +2309,23 @@ public class Gob implements Rendered, Sprite.Owner, Skeleton.ModOwner, Skeleton.
 //        if (homing != null && homing.tgt() != null && homing.tgt().getattr(LinMove.class) != null)
 //            return (true);
 
-        return (getattr(Moving.class) != null);
+
+        // when player is riding a horse, player is only moving if the ridden horse is also moving
+        if (getattr(Moving.class) != null) {
+            Gob riddenGob = findRiddenGob();
+            return riddenGob == null || riddenGob.isMoving();
+        }
+
+        return false;
+    }
+
+    public Gob findRiddenGob() {
+        Following follow = getattr(Following.class);
+        if (follow == null || follow.tgt() == null || follow.tgt().rc.dist((rc)) >= 0.1) {
+            return null;
+        } else {
+            return follow.tgt();
+        }
     }
 
     public LinMove getLinMove() {
