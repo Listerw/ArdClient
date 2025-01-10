@@ -833,9 +833,18 @@ public class MCache {
                 int resver = buf.uint16();
                 cktileid(tileid);
                 nsets[tileid] = new Resource.Spec(Resource.remote(), resnm, resver);
+
+                if (shallowater.matcher(resnm).matches()) {
+                    id2tile[tileid] = Tile.SHALLOWWATER;
+                } else if (deepwater.matcher(resnm).matches()) {
+                    id2tile[tileid] = Tile.DEEPWATER;
+                } else if (cave.matcher(resnm).matches()) {
+                    id2tile[tileid] = Tile.CAVE;
+                }
             }
             for (int i = 0; i < tiles.length; i++) {
                 tiles[i] = buf.uint8();
+                hitmap[i] = id2tile[tiles[i]];
                 if (nsets[tiles[i]] == null)
                     throw (new Message.FormatError(String.format("Got undefined tile: " + tiles[i])));
             }
@@ -857,10 +866,19 @@ public class MCache {
                 int resver = buf.uint16();
                 cktileid(tileid);
                 nsets[tileid] = new Resource.Spec(Resource.remote(), resnm, resver);
+
+                if (shallowater.matcher(resnm).matches()) {
+                    id2tile[tileid] = Tile.SHALLOWWATER;
+                } else if (deepwater.matcher(resnm).matches()) {
+                    id2tile[tileid] = Tile.DEEPWATER;
+                } else if (cave.matcher(resnm).matches()) {
+                    id2tile[tileid] = Tile.CAVE;
+                }
             }
             boolean lg = maxid >= 256;
             for (int i = 0; i < tiles.length; i++) {
                 tiles[i] = tileids[lg ? buf.uint16() : buf.uint8()];
+                hitmap[i] = id2tile[tiles[i]];
                 if (nsets[tiles[i]] == null)
                     throw (new Message.FormatError(String.format("Got undefined tile: " + tiles[i])));
             }
